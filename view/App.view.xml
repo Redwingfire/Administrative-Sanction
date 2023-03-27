@@ -1,0 +1,18 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" controllerName="com.goap.cfms.works.as.controller.App" displayBlock="true" xmlns:m="sap.m" xmlns:l="sap.ui.layout"
+xmlns="sap.ui.commons"
+	height="100%" class="sapUiSizeCompact">
+	<m:App id="app" busy="{appView>/busy}" busyIndicatorDelay="{appView>/delay}">
+	<l:Splitter>
+		<m:App id="MasterPage">
+			<m:layoutData>
+				<l:SplitterLayoutData size="30%" />
+			</m:layoutData>
+		</m:App>
+		<m:App id="DetailPage">
+			<m:layoutData>
+				<l:SplitterLayoutData size="70%" />
+			</m:layoutData>
+		</m:App>
+	</l:Splitter>
+	</m:App>
+</mvc:View>

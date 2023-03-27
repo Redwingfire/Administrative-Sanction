@@ -1,0 +1,140 @@
+<!-- 
+
+ Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+ -->
+<core:FragmentDefinition height="100%" xmlns:layout="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns="sap.m">
+	<Dialog title="{i18n>master.frag.title.createas}" contentHeight="40%" contentWidth="40%">
+		<content>
+			<VBox class="sapUiSmallMarginTop">
+				
+				<!-- Prashil: Set Visible false to avoid testing Amend Function until confirmed -->
+				<HBox justifyContent="SpaceBetween" width="25rem">
+					<HBox alignItems="Center" class="sapUiMediumMarginEnd">
+						<RadioButton id="idAmendRadioBtn" groupName="GroupA" text="{i18n>master.frag.label.amendment}" select="onSelectRadioAS" selected="true"/>
+					</HBox>
+					<Input id="idAmendASCode" placeholder="{i18n>master.frag.popup.placeholder.new}" width="12rem" editable="{createNewASModel>/amendEditable}"
+						suggestionItemSelected="handleSuggestionItemSelected" showSuggestion="true" showValueHelp="true" valueHelpOnly="true"
+						liveChange="handleLiveChange" suggestionItems="{/ZWRK_C_CODE}" valueHelpRequest="handleValueHelp">
+						<customData>
+							<core:CustomData key="key" value="code"/>
+							<core:CustomData key="text" value="code"/>
+							<core:CustomData key="reqFields" value="guid"/>
+							<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_C_CODE', entityType: 'ZWRK_C_CODEType'}"/>
+							<core:CustomData key="filterArray" value="{filter:[{key: 'status', filterOperator: 'EQ', filterValue: 'E0006'},{key: 'PositionId', filterOperator: 'EQ', dynamic: 'X', model : 'appView', property: '/position'},{key: 'ApplicationId', filterOperator: 'EQ', filterValue: 'AS'}]}"/>
+							<core:CustomData key="mode" value="SingleSelectMaster"/>
+						</customData>
+						<suggestionItems>
+							<core:Item text="{code}" key="{code}"/>
+						</suggestionItems>
+					</Input>
+				</HBox>
+				<HBox justifyContent="SpaceBetween" width="25rem">
+					<HBox alignItems="Center" class="sapUiMediumMarginEnd">
+						<RadioButton id="idCopyFromRadioBtn" groupName="GroupA" text="{i18n>master.frag.label.CopyFrom}" select="onSelectRadioAS"/>
+					</HBox>
+					<Input id="idCopyFromASCode" width="12rem" placeholder="{i18n>master.frag.popup.placeholder.new}"
+						editable="{createNewASModel>/copyEditable}" suggestionItemSelected="handleSuggestionItemSelected" showSuggestion="true" showValueHelp="true"
+						valueHelpOnly="true" liveChange="handleLiveChange" suggestionItems="{/ZWRK_C_CODE}" valueHelpRequest="handleValueHelp">
+						<customData>
+							<core:CustomData key="key" value="code"/>
+							<core:CustomData key="text" value="code"/>
+							<core:CustomData key="reqFields" value="guid"/>
+							<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_C_CODE', entityType: 'ZWRK_C_CODEType'}"/>
+							<core:CustomData key="filterArray" value="{filter:[{key: 'status', filterOperator: 'EQ', filterValue: 'E0006'}]}"/>
+							<core:CustomData key="mode" value="SingleSelectMaster"/>
+						</customData>
+						<suggestionItems>
+							<core:Item text="{code}" key="{code}"/>
+						</suggestionItems>
+					</Input>
+				</HBox>
+				<!-- Prashil: Set Visible false to avoid testing Amend Function until confirmed -->
+				<HBox alignItems="Center" visible="false">
+					<RadioButton id="idBundleRadioBtn" groupName="GroupA" text="{i18n>master.frag.label.Bundle}" select="onSelectRadioAS"/>
+				</HBox>
+				<HBox justifyContent="SpaceBetween" width="25rem">
+					<HBox alignItems="Center" class="sapUiMediumMarginEnd">
+						<RadioButton id="idMigratedRadioBtn" groupName="GroupA" text="{i18n>master.frag.label.migrated}" select="onSelectRadioAS"/>
+					</HBox>
+				</HBox>
+				<HBox visible="{createNewASModel>/migratedASRadioButtons}">
+					<HBox width="5%"></HBox>
+					<VBox width="40%">
+						<HBox justifyContent="SpaceBetween" width="22.5rem">
+							<HBox alignItems="Center" class="sapUiMediumMarginEnd">
+								<RadioButton id="idMigratedRadioBtnPhaseOne" selected="{createNewASModel>/migratedRadioBtnPhaseOneSelected}" groupName="GroupC"
+									text="{i18n>master.frag.label.phaseOne}" select="onSelectRadioButton"/>
+							</HBox>
+						
+						</HBox>
+						<HBox justifyContent="SpaceBetween" width="22.5rem">
+							<HBox alignItems="Center" class="sapUiMediumMarginEnd">
+								<RadioButton id="idMigratedRadioBtnNonCfms" selected="{createNewASModel>/migratedRadioBtnNonCfmsSelected}" groupName="Groupc"
+									text="{i18n>master.frag.label.nonCfms}" select="onSelectRadioButton"/>
+							</HBox>
+						
+						</HBox>
+					</VBox>
+				</HBox>
+				<HBox alignItems="Center">
+					<RadioButton id="idNewRadioBtn" groupName="GroupA" text="{i18n>master.frag.label.new}"  select="onSelectRadioAS"  selected="false" />
+				</HBox>
+				<HBox visible="{createNewASModel>/NewASRadioButtons}">
+					<HBox width="5%"></HBox>
+					<HBox width="40%">
+						<HBox justifyContent="SpaceBetween" width="22.5rem">
+							<HBox alignItems="Center" class="sapUiMediumMarginEnd">
+								<RadioButton id="idNewRadioBtnGO" selected="{createNewASModel>/NewRadioBtnPhaseOneSelected}" groupName="GroupC"
+									text="{i18n>master.frag.label.GO}" select="onSelectNewRadioButton"/>
+							</HBox>
+						
+						</HBox>
+						<HBox justifyContent="SpaceBetween" width="22.5rem">
+							<HBox alignItems="Center" class="sapUiMediumMarginEnd">
+								<RadioButton id="idNewRadioBtnProceeding" selected="{createNewASModel>/NewRadioBtnNonCfmsSelected}" groupName="Groupc"
+									text="{i18n>master.frag.label.proceeding}" select="onSelectNewRadioButton"/>
+							</HBox>
+							
+						</HBox>
+					</HBox>
+				</HBox>
+			</VBox>
+			<Table id="idMasterBundleCodeTable" inset="false" mode="SingleSelectLeft" visible="false" items="{oBundleCodeModel>/}">
+				<headerToolbar>
+					<Toolbar>
+						<content>
+							<ToolbarSpacer/>
+							<Button icon="sap-icon://add" type="Transparent" width="5rem" press="onAddNewRow"/>
+							<Button icon="sap-icon://delete" type="Transparent" press="onDeleteRow"/>
+						</content>
+					</Toolbar>
+				</headerToolbar>
+				<columns>
+					<Column>
+						<Text text="{i18n>master.frag.table.column.code}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>master.frag.table.column.description}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>master.frag.table.column.amount}"/>
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<Input value="{oBundleCodeModel>code}" showSuggestion="true" showValueHelp="true"/>
+							<Text text="{oBundleCodeModel>description}"/>
+							<Text text="{oBundleCodeModel>amount}"/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+		<buttons>
+			<Button text="{i18n>master.frag.action.create}" press="onCreateAS" type="Accept" enabled="{masterView>/bCreateBtnEnable}"></Button>
+			<Button text="{i18n>master.frag.action.cancel}" press="onCancelAS"></Button>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

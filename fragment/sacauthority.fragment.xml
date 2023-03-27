@@ -1,0 +1,5 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<SelectDialog id="sacauthority" confirm="sacauthorityConfirm" class="SanctionAuthorityDialog" liveChange="sacauthoritySearch" items="{sacauthmodel>/results}">
+		<StandardListItem title="{sacauthmodel>Auth_Pos}" description="{sacauthmodel>Name_Pos}" info="{sacauthmodel>Org_Text}"/>
+	</SelectDialog>
+</core:FragmentDefinition>

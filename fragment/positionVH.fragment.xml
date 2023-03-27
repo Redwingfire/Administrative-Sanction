@@ -1,0 +1,14 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<SelectDialog
+		title="{i18n>i18n>detail.ops.panel.content.label.Position}"
+		multiSelect = "false"
+		rememberSelections = "true"
+		liveChange="handlePositionSearch"
+        search="handlePositionSearch"
+		confirm="OnPositionSelect"
+		cancel="handlePositionClose">
+        
+	</SelectDialog>
+</core:FragmentDefinition>

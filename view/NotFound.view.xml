@@ -1,0 +1,7 @@
+<mvc:View
+	controllerName="com.goap.cfms.works.as.controller.NotFound"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m">
+
+	
+</mvc:View>

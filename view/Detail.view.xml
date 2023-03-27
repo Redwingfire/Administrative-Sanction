@@ -1,0 +1,1841 @@
+<mvc:View controllerName="com.goap.cfms.works.as.controller.Detail" xmlns:mvc="sap.ui.core.mvc" xmlns:rte="sap.ui.richtexteditor"
+	displayBlock="true" xmlns="sap.m" xmlns:uxap="sap.uxap" xmlns:f="sap.ui.layout.form" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core"
+	xmlns:commons="sap.suite.ui.commons" xmlns:table="sap.ui.table" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	class="sapUiSizeCompact">
+	<uxap:ObjectPageLayout id="ObjectPageLayout" class="customRemovePadding" selectedSection="idGI" alwaysShowContentHeader="true"
+		headerContentPinnable="true" preserveHeaderStateOnScroll="true" enableLazyLoading="true" showFooter="true" busy="{detailView>/busy}"
+		busyIndicatorDelay="{detailView>/delay}">
+		<uxap:headerTitle>
+			<uxap:ObjectPageHeader id="idObjectPageHeader"
+				objectTitle="{detailView>/ObjectTitle}: {ShortDesc} ({path: 'Code',formatter: '.formatter._removeZeroes'})">
+				<uxap:actions>
+					<l:HorizontalLayout>
+						<Button visible="{= ${detailView>/Migrated}? true : false}" text="Migrated Details" press="onAddMigPress" type="Transparent"/>
+						<Button text="{i18n>detail.page.header.title.button.version}" press="onVersionPress" type="Emphasized"/>
+						<!--<Button text="{i18n>detail.page.header.title.additionalNoteButton}" type="Transparent" press="onAdditionalNotePress"/>-->
+						<Button icon="sap-icon://edit" text="{i18n>detail.page.header.title.editButton}" type="Transparent" press="onEditPress"
+							visible="{= ${detailView>/stateId} === 'D' &amp;&amp; ${detailView>/authorized} &amp;&amp; (${detailView>/Mode} !== 'display')}"/>
+						<Button icon="sap-icon://display" text="{i18n>detail.page.header.title.displayButton}" type="Transparent" press="onDisplayPress"
+							visible="{= ${detailView>/stateId} === 'E'? true : false}"/>
+						<Button text="{i18n>detail.page.header.title.printButton}" type="Transparent" press="onPrintPress"/>
+						<Button text="{i18n>detail.page.header.title.changeLog}" type="Transparent" press="onChangeLogPress"/>
+						<Button id="asIdBtnScreenToggle" icon="sap-icon://full-screen" type="Transparent" visible="{=(${detailView>/Mode} !== 'display')}"
+							press="onFullScreenPress"/>
+					</l:HorizontalLayout>
+				</uxap:actions>
+			</uxap:ObjectPageHeader>
+		</uxap:headerTitle>
+		<uxap:headerContent>
+			<Panel class="sapUiNoContentPadding" visible="true">
+				<FlexBox width="90%" justifyContent="SpaceBetween" alignItems="Start">
+					<items>
+						<l:VerticalLayout>
+							<Label text="{i18n>detail.ops.panel.content.label.createdBy}" design="Bold"/>
+							<Label text="{UserIdCrName}" class="sapUiTinyMarginEnd" design="Bold"/>
+						</l:VerticalLayout>
+						<l:VerticalLayout>
+							<Label text="{i18n>detail.ops.panel.content.label.createdOn}" design="Bold"/>
+							<Label text="{path:'DatetimeCr',type: 'sap.ui.model.odata.type.DateTime'}" class="sapUiTinyMarginEnd" design="Bold"/>
+						</l:VerticalLayout>
+						<l:VerticalLayout>
+							<Label text="{i18n-reuse>detail.ops.version.table.column.text.version}" design="Bold"/>
+							<Label text="{path:'Version'}" class="sapUiTinyMarginEnd" design="Bold"/>
+						</l:VerticalLayout>
+						<l:VerticalLayout>
+							<Label text="{i18n>detail.ops.panel.content.label.EValue}" design="Bold"/>
+							<Label
+								text="{ parts:[{path:'EstimateVal'},{path:'Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure: false}, formatter: '.formatter.formatAmount' }"
+								class="sapUiTinyMarginEnd" design="Bold"/>
+							<ProgressIndicator visible="{= ${Status} === 'E0006' ? true : false}"
+								percentValue="{path:'Percentage', formatter:'.formatter.getPercentage'}" displayValue="{Percentage}%" showValue="true"
+								state="{path: 'Percentage', formatter:'.formatter.getProcessIndState'}"/>
+						</l:VerticalLayout>
+						<l:VerticalLayout>
+							<Label text="{i18n>detail.ops.panel.content.label.Status}" visible="{= ${oControlModel>/Status/visible}}" design="Bold"/>
+							<FormattedText htmlText="{path:'StatusText', formatter:'.formatter._statusformat'}" class="sapUiTinyMarginEnd"
+								visible="{= ${oControlModel>/Status/visible}}"/>
+						</l:VerticalLayout>
+					</items>
+				</FlexBox>
+			</Panel>
+		</uxap:headerContent>
+		<uxap:sections>
+			<uxap:ObjectPageSection id="idGI" title="{i18n>detail.ObjPageSection.title.GI}" showTitle="false">
+				<uxap:ObjectPageSubSection mode="Collapsed">
+					<uxap:blocks>
+						<Panel expandable="false" expanded="true">
+							<content>
+								<HBox id="idProcessFlowBox" alignContent="Stretch" alignItems="Stretch" justifyContent="Start" fitContainer="true"
+									class="sapUiMediumMarginBottom"></HBox>
+								<f:Form editable="true">
+									<f:layout>
+										<f:ResponsiveGridLayout labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0" emptySpanM="0"
+											emptySpanS="0" columnsXL="3" columnsL="3" columnsM="3"/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer >
+											<f:formElements>
+												<f:FormElement visible="{= ${oControlModel>/Code/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.Code}" required="{= ${oControlModel>/Code/mandatory}}" labelFor="idCode"/>
+													</f:label>
+													<f:fields>
+														<Input id="idCode" tooltip="{path: 'Code',formatter: '.formatter._removeZeroes'}" change="onFieldChange"
+															value="{path: 'Code',formatter: '.formatter._removeZeroes'}"
+															editable="{= ${oControlModel>/Code/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" visible="{oControlModel>/Code/visible}"
+															valueState="{= ${oControlModel>/Code/valueState}}" valueStateText="{= ${oControlModel>/Code/valueStateText}}"
+															maxLength="{oControlModel>/Code/maxLength}" type="{oControlModel>/Code/type}"/>
+													</f:fields>
+												</f:FormElement>
+												<f:FormElement visible="{= ((${detailView>/ApproveBtnVisibility} === 'X') || (${Status} === 'E0006')) ? true : false}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.GOrderNo}" required="{oControlModel>/GoNumber/mandatory}" labelFor="idSD"/>
+													</f:label>
+													<f:fields>
+														<Input app:apprField="true" change="onFieldChange" tooltip="{GoNumber}" liveChange="onGOLiveChange" value="{GoNumber}"
+															editable="{= ((${detailView>/bIsSecratary} ? false : true) &amp;&amp; ${detailView>/stateId} !== 'D' &amp;&amp; ${detailView>/ApproveBtnVisibility} === 'X')? true : false}"
+															valueState="{detailView>/GoNumValueState}" valueStateText="{detailView>/GoNumValueStateText}"
+															visible="{=${detailView>/ApproveBtnVisibility} === 'X' || !${DigSignature}}"/>
+														<Link text="{GoNumber}" tooltip="{GoNumber}" press="onPrintPress" visible="{=${Status} === 'E0006' &amp;&amp; ${DigSignature}}"/>
+													</f:fields>
+												</f:FormElement>
+												<f:FormElement visible="{ (${detailView>/bIsSecratary} || (${Status} === 'E0006')) ? true : false}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.Section}" required="true" labelFor="idSecCode"/>
+													</f:label>
+													<f:fields>
+														<Select app:bindPath="SecDode" app:apprField="true" app:clearKey="SecDode" id="idSecCode" change="onSelectChange" selectedKey="{SecDode}"
+															forceSelection="false" enabled="{= ${detailView>/bIsSecratary} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															valueState="{detailView>/secCodeValueState}" valueStateText="{detailView>/secCodeValueStateText}"></Select>
+													</f:fields>
+												</f:FormElement>
+											</f:formElements>
+										</f:FormContainer>
+										<f:FormContainer >
+											<f:formElements>
+												<!--<f:FormElement visible="{= ${oControlModel>/Code/visible}}">-->
+												<!--	<f:label>-->
+												<!--		<Label text="{i18n>detail.ops.panel.content.label.SO}" required="{= ${oControlModel>/Code/mandatory}}"/>-->
+												<!--	</f:label>-->
+												<!--	<f:fields>-->
+												<!--		<Input id="idSO" value="" editable="false" visible="{oControlModel>/Code/visible}"/>-->
+												<!--	</f:fields>-->
+												<!--</f:FormElement>-->
+												<f:FormElement label="{i18n>detail.ops.panel.content.label.SD}" visible="{= ${oControlModel>/ShortDesc/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.SD}" required="{oControlModel>/ShortDesc/mandatory}" labelFor="idSD"/>
+													</f:label>
+													<f:fields>
+														<Input id="idSD" tooltip="{ShortDesc}" placeholder="{i18n>detail.ops.panel.content.label.PSD}" liveChange="onFieldLiveChange"
+															change="onFieldChange" value="{ShortDesc}" editable="{= ${oControlModel>/ShortDesc/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															visible="{oControlModel>/ShortDesc/visible}" valueState="{= ${oControlModel>/ShortDesc/valueState}}"
+															valueStateText="{= ${oControlModel>/ShortDesc/valueStateText}}" maxLength="{oControlModel>/ShortDesc/maxLength}"
+															type="{oControlModel>/ShortDesc/type}"/>
+													</f:fields>
+												</f:FormElement>
+												<f:FormElement visible="{= ((${detailView>/ApproveBtnVisibility} === 'X') || (${Status} === 'E0006')) ? true : false}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.GOrderDate}" required="{oControlModel>/GoRefDate/mandatory}"/>
+													</f:label>
+													<f:fields>
+														<DatePicker app:apprField="true" change="onFieldChange" maxDate="{detailView>/oToDayDate}"
+															value="{path:'GoRefDate', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, UTC: true}}"
+															editable="{= ((${detailView>/bIsSecratary} ? false : true) &amp;&amp; ${detailView>/stateId} !== 'D' &amp;&amp; ${detailView>/ApproveBtnVisibility} === 'X')? true : false}"
+															valueState="{detailView>/goDateValueState}" valueStateText="{detailView>/goDateValueStateText}"/>
+													</f:fields>
+												</f:FormElement>
+											</f:formElements>
+										</f:FormContainer>
+										<f:FormContainer class="sapUiNoContentPadding"></f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+								<f:Form editable="true">
+									<f:layout>
+										<f:ResponsiveGridLayout class="noPadding" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0"
+											emptySpanM="0" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer>
+											<f:FormElement label="" visible="{= ${oControlModel>/Description/visible}}">
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.Description}" required="{= ${oControlModel>/Description/mandatory}}"/>
+												</f:label>
+												<f:fields>
+													<TextArea value="{DescriptionL}" placeholder="{i18n>detail.ops.panel.content.label.PDescription}" change="onFieldChange"
+														tooltip="{DescriptionL}" maxLength="{oControlModel>/Description/maxLength}"
+														enabled="{= ${oControlModel>/Description/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" showExceededText="true" height="6rem"/>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+								<f:Form editable="true" id="idWFCO1" visible="false">
+									<f:layout>
+										<f:ResponsiveGridLayout class="noPadding" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0"
+											emptySpanM="0" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer>
+											<f:FormElement label="">
+												<f:label>
+													<Label text="Wheather Finance concurrence occured or not?"/>
+												</f:label>
+												<f:fields>
+													<FlexBox alignItems="Start" justifyContent="Start">
+														<CheckBox id="yes" text="Yes" enabled="{= ${oControlModel>/MainWorkNature/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															select="onpresscheckbox"/>
+														<CheckBox id="no" text="No" enabled="{= ${oControlModel>/MainWorkNature/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															select="onpresscheckbox"/>
+													</FlexBox>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+								<f:Form editable="true" id="idWFCO2" visible="false">
+									<f:layout>
+										<f:ResponsiveGridLayout class="noPadding" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0"
+											emptySpanM="0" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer>
+											<f:FormElement label="">
+												<f:label>
+													<Label text="Finance concurrence (up to 500 characters)"/>
+												</f:label>
+												<f:fields>
+													<TextArea id="idTextarea" value="{DescriptionL}" placeholder="{i18n>detail.ops.panel.content.label.PDescription}" change="onFieldChange"
+														tooltip="{DescriptionL}" maxLength="{oControlModel>/Description/maxLength}"
+														enabled="{= ${oControlModel>/Description/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" showExceededText="true" height="6rem"/>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+								<f:Form editable="true">
+									<f:layout>
+										<f:ResponsiveGridLayout class="noPadding" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0"
+											emptySpanM="0" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer>
+											<f:FormElement label="">
+												<f:label>
+													<Label text=""/>
+												</f:label>
+												<f:fields>
+													<Button width="50%" icon="sap-icon://request" text="Order" type="Emphasized" press="onAdditionalNotePress"
+														enabled="{= ${oControlModel>/MainWorkNature/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"/>
+												</f:fields>
+												<f:fields>
+													<Button width="50%" icon="sap-icon://request" text="Refrence" type="Emphasized" press="onAdditionalNotePressReference"
+														enabled="{= ${oControlModel>/MainWorkNature/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"/>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+								<f:Form editable="true">
+									<f:layout>
+										<f:ResponsiveGridLayout labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0" emptySpanM="0"
+											emptySpanS="0" columnsXL="3" columnsL="3" columnsM="3"/>
+									</f:layout>
+									<f:formContainers>
+										<!--<f:FormContainer >-->
+										<!--	<f:FormElement visible="{= ${oControlModel>/Category/visible}}">-->
+										<!--		<f:label>-->
+										<!--			<Label text="{i18n>detail.ops.panel.content.label.Catogery}" required="{= ${oControlModel>/Category/mandatory}}"/>-->
+										<!--		</f:label>-->
+										<!--		<f:fields>-->
+										<!--			<Select app:bindPath="Category" app:clearKey="Category" id="idCategory" change="onSelectChangeCategory" selectedKey="{Category}"-->
+										<!--				forceSelection="false" enabled="{= ${oControlModel>/Category/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"-->
+										<!--				valueState="{= ${oControlModel>/Category/valueState}}" valueStateText="{= ${oControlModel>/Category/valueStateText}}"></Select>-->
+										<!--		</f:fields>-->
+										<!--	</f:FormElement>-->
+										<!--</f:FormContainer>-->
+										<!--<f:FormContainer >-->
+										<!--	<f:FormElement label="" visible="{= ${oControlModel>/Scheme/visible}}">-->
+										<!--		<f:label>-->
+										<!--			<Label text="{i18n>detail.ops.panel.content.label.Scheme}" required="{= ${oControlModel>/Scheme/mandatory}}"/>-->
+										<!--		</f:label>-->
+										<!--		<f:fields>-->
+										<!--			<Select id = "idSchemeCode" app:bindPath="Scheme" change="onSelectChange" items="{path: '/ZWRK_C_SCHEMES', sorter:{path:'schemdesc'}}" selectedKey="{Scheme}"-->
+										<!--				enabled="{= ${oControlModel>/Scheme/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" forceSelection="false"-->
+										<!--				valueState="{= ${oControlModel>/Scheme/valueState}}" valueStateText="{= ${oControlModel>/Scheme/valueStateText}}">-->
+										<!--				<items>-->
+										<!--					<core:Item text="{schemdesc}" key="{schemeid}"/>-->
+										<!--				</items>-->
+										<!--			</Select>-->
+										<!--			<Button visible="{= ${oControlModel>/Scheme/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" -->
+										<!--					press = "_handlePressAddNewScheme" icon = "sap-icon://add" tooltip = "{i18n>detail.frag.title.screateScheme}">-->
+										<!--				<layoutData>-->
+										<!--					<l:GridData span="XL1 L2 M2 S4" />-->
+										<!--				</layoutData>-->
+										<!--			</Button>-->
+										<!--		</f:fields>-->
+										<!--	</f:FormElement>-->
+										<!--	<f:FormElement visible="{= ${oControlModel>/EmergencyAs/visible}}">-->
+										<!--		<f:label>-->
+										<!--			<Label text="{i18n>detail.ops.panel.content.label.Emergency}" required="{= ${oControlModel>/EmergencyAs/mandatory}}"/>-->
+										<!--		</f:label>-->
+										<!--		<f:fields>-->
+										<!--			<CheckBox app:bindPath="EmergencyAs" tooltip="{= ${EmergencyAs} === true ? ${i18n>tooltip.Emergency} : ${i18n>tooltip.NoEmergency}}"-->
+										<!--				selected="{EmergencyAs}" select="onFieldChange" editable="{detailView>/bEditable}"/>-->
+										<!--		</f:fields>-->
+										<!--	</f:FormElement>-->
+										<!--</f:FormContainer>-->
+										<f:FormContainer>
+											<f:FormElement visible="{= ${oControlModel>/MigrationInd/visible}}">
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.MigrationInd}" required="{= ${oControlModel>/MigrationInd/mandatory}}"/>
+												</f:label>
+												<f:fields>
+													<CheckBox app:bindPath="MigrationInd" tooltip="{= ${MigrationInd} === true ? ${i18n>tooltip.Migrated} : ${i18n>tooltip.NotMigrated}}"
+														selected="{MigrationInd}" select="onFieldChange"
+														editable="{= ${oControlModel>/MigrationInd/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"/>
+												</f:fields>
+												<f:fields>
+													<!--<HBox width="40%">-->
+													<!--<HBox justifyContent="SpaceBetween" width="22.5rem">-->
+													<!--<HBox alignItems="Center" class="sapUiMediumMarginEnd">-->
+													<!--<RadioButton id="idNEWGO" -->
+													<!--	text="G.O." select="Onselectiongoproceeding"/>-->
+													<!--</HBox>-->
+													<!--</HBox>-->
+													<!--<HBox justifyContent="SpaceBetween" width="22.5rem">-->
+													<!--<HBox alignItems="Center" class="sapUiMediumMarginEnd">-->
+													<!--<RadioButton id="idNEWPROCEEDING" -->
+													<!--	text="Proceeding" select="Onselectiongoproceeding"/>-->
+													<!--</HBox>-->
+													<!--</HBox>-->
+													<!--</HBox>-->
+													<CheckBox id="idNEWGO" text="G.O." selected="true" visible="false" editable="false"/>
+													<CheckBox id="idNEWPROCEEDING" text="Proceeding" visible="false" selected="true" editable="false"/>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+									</f:formContainers>
+									<!--	<f:FormContainer>-->
+									<!--<f:formContainers>-->
+									<!--					<HBox width="40%">-->
+									<!--	<HBox justifyContent="SpaceBetween" width="22.5rem">-->
+									<!--		<HBox alignItems="Center" class="sapUiMediumMarginEnd">-->
+									<!--			<RadioButton id="idNEWGO" -->
+									<!--				text="G.O." select="Onselectiongoproceeding"/>-->
+									<!--		</HBox>-->
+									<!--	</HBox>-->
+									<!--	<HBox justifyContent="SpaceBetween" width="22.5rem">-->
+									<!--		<HBox alignItems="Center" class="sapUiMediumMarginEnd">-->
+									<!--			<RadioButton id="idNEWPROCEEDING" -->
+									<!--				text="Proceeding" select="Onselectiongoproceeding"/>-->
+									<!--		</HBox>-->
+									<!--	</HBox>-->
+									<!--</HBox>-->
+									<!--	</f:FormContainer>-->
+									<!--</f:formContainers>-->
+								</f:Form>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+			<!--changes by Lahari-->
+			<uxap:ObjectPageSection id="DW" title="{i18n>detail.ObjPageSection.title.DW}" showTitle="false" class="sapUiLargePaddingBottom">
+				<uxap:ObjectPageSubSection>
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true" width="auto">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ops.panel.content.label.DWork}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<VBox>
+									<f:Form editable="true">
+										<f:layout>
+											<f:ResponsiveGridLayout labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0"
+												emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="3" columnsL="3" columnsM="3" singleContainerFullSize="false"/>
+										</f:layout>
+										<f:formContainers>
+											<f:FormContainer>
+												<f:formElements>
+													<f:FormElement visible="{= ${oControlModel>/MainWorkNature/visible}}">
+														<f:label>
+															<Label text="{i18n>detail.ops.panel.content.label.MWNature}" required="{= ${oControlModel>/MainWorkNature/mandatory}}"/>
+														</f:label>
+														<f:fields>
+															<Input showValueHelp="true" id="idMainNatureWork" placeholder="{i18n>detail.ops.panel.content.label.PMWNature}"
+																app:bindPath="MainWorkNature" app:clearKey="MAIN_WORK" change="onSelectChangeDetailWork" valueHelpOnly="true"
+																suggestionItems="{ path: '/ZWRK_C_MAINNATUREWORK', events: {dataReceived: '.onSuggestDataReceived'} }" selectedKey="{MainWorkNature}"
+																filterSuggests="true" showSuggestion="true" suggest="handleSuggest"
+																enabled="{= ${oControlModel>/MainWorkNature/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+																valueState="{oControlModel>/MainWorkNature/valueState}" valueStateText="{oControlModel>/MainWorkNature/valueStateText}"
+																valueHelpRequest="handleValueHelp">
+																<customData>
+																	<core:CustomData key="key" value="MN_WRK_CODE"/>
+																	<core:CustomData key="text" value="MAIN_WORK"/>
+																	<core:CustomData key="SFPersistenceKey" value="MainWork_SF_AS_PersistenceKey"/>
+																	<core:CustomData key="reqFields" value="MN_WRK_CODE"/>
+																	<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_C_MAINNATUREWORK', entityType: 'ZWRK_C_MAINNATUREWORKType'}"/>
+																	<core:CustomData key="filterArray" value="{filter:[]}"/>
+																	<core:CustomData key="mode" value="SingleSelectMaster"/>
+																</customData>
+																<suggestionItems>
+																	<core:ListItem key="{MN_WRK_CODE}" text="{MAIN_WORK}"/>
+																</suggestionItems>
+															</Input>
+														</f:fields>
+													</f:FormElement>
+													<f:FormElement label="" visible="{= ${oControlModel>/SubclassL03/visible}}">
+														<f:label>
+															<Label text='{i18n>detail.ops.panel.content.label.SubL03}' required="{= ${oControlModel>/SubclassL03/mandatory}}"/>
+														</f:label>
+														<f:fields>
+															<Input showValueHelp="true" maxSuggestionWidth="40rem" id="idSubClass03" placeholder="{i18n>detail.ops.panel.content.label.PSubL03}"
+																app:bindPath="SubclassL03" change="onSelectChangeDetailWork" showSuggestion="true" valueHelpOnly="true"
+																suggestionItems="{ path: '/zwrk_subclass03', events: {dataReceived: '.onSuggestDataReceived'} }" selectedKey="{SubclassL03}"
+																suggest="handleSuggest" enabled="{= ${oControlModel>/SubclassL03/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+																valueState="{oControlModel>/SubclassL03/valueState}" valueStateText="{oControlModel>/SubclassL03/valueStateText}"
+																valueHelpRequest="handleValueHelp">
+																<customData>
+																	<core:CustomData key="key" value="sb_wrk03_code"/>
+																	<core:CustomData key="text" value="sub_work_03"/>
+																	<core:CustomData key="SFPersistenceKey" value="SubWork03_SF_AS_PersistenceKey"/>
+																	<core:CustomData key="reqFields" value="sb_wrk03_code"/>
+																	<core:CustomData key="entityInfo" value="{entitySet: 'zwrk_subclass03', entityType: 'zwrk_subclass03Type'}"/>
+																	<core:CustomData key="filterArray"
+																		value="{filter:[ {key: 'mn_wrk_code', value: 'MainWorkNature'}, {key: 'sb_wrk01_code', value: 'SubclassL01'}, {key: 'sb_wrk02_code', value: 'SubclassL02'} ]}"/>
+																	<core:CustomData key="mode" value="SingleSelectMaster"/>
+																</customData>
+																<suggestionItems>
+																	<core:ListItem key="{sb_wrk03_code}" text="{sub_work_03}"/>
+																</suggestionItems>
+															</Input>
+														</f:fields>
+													</f:FormElement>
+												</f:formElements>
+											</f:FormContainer>
+											<f:FormContainer>
+												<f:FormElement label="" visible="{= ${oControlModel>/SubclassL01/visible}}">
+													<f:label>
+														<Label text='{i18n>detail.ops.panel.content.label.SubL01}' required="{= ${oControlModel>/SubclassL01/mandatory}}"/>
+													</f:label>
+													<f:fields>
+														<Input showValueHelp="true" placeholder="{i18n>detail.ops.panel.content.label.PSubL01}" maxSuggestionWidth="40rem" id="idSubClass01"
+															app:bindPath="SubclassL01" app:clearKey="sub_work_01" change="onSelectChangeDetailWork" showSuggestion="true" selectedKey="{SubclassL01}"
+															suggestionItems="{ path: '/ZWRK_SUBCLASS01', events: {dataReceived: '.onSuggestDataReceived'} }" suggest="handleSuggest"
+															valueHelpOnly="true" enabled="{= ${oControlModel>/SubclassL01/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" filterSuggests="true"
+															valueState="{oControlModel>/SubclassL01/valueState}" valueStateText="{oControlModel>/SubclassL01/valueStateText}"
+															valueHelpRequest="handleValueHelp">
+															<customData>
+																<core:CustomData key="key" value="sb_wrk01_code"/>
+																<core:CustomData key="text" value="sub_work_01"/>
+																<core:CustomData key="SFPersistenceKey" value="SubWork01_SF_AS_PersistenceKey"/>
+																<core:CustomData key="reqFields" value="sb_wrk01_code"/>
+																<core:CustomData key="entityInfo" value="{ entitySet: 'ZWRK_SUBCLASS01', entityType: 'ZWRK_SUBCLASS01Type'}"/>
+																<core:CustomData key="filterArray" value="{filter:[{key: 'mn_wrk_code', value: 'MainWorkNature'}]}"/>
+																<core:CustomData key="mode" value="SingleSelectMaster"/>
+															</customData>
+															<suggestionItems>
+																<core:ListItem key="{sb_wrk01_code}" text="{sub_work_01}"/>
+															</suggestionItems>
+														</Input>
+													</f:fields>
+												</f:FormElement>
+											</f:FormContainer>
+											<f:FormContainer>
+												<f:FormElement label="" visible="{= ${oControlModel>/SubclassL02/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.SubL02}" required="{= ${oControlModel>/SubclassL02/mandatory}}"/>
+													</f:label>
+													<f:fields>
+														<Input showValueHelp="true" maxSuggestionWidth="40rem" id="idSubClass02" placeholder="{i18n>detail.ops.panel.content.label.PSubL02}"
+															app:bindPath="SubclassL02" app:clearKey="sub_work_02" change="onSelectChangeDetailWork" selectedKey="{SubclassL02}"
+															suggestionItems="{ path: '/ZWRK_SUBCLASS02', events: {dataReceived: '.onSuggestDataReceived'} }" showSuggestion="true" valueHelpOnly="true"
+															suggest="handleSuggest" enabled="{= ${oControlModel>/SubclassL02/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															valueState="{oControlModel>/SubclassL02/valueState}" valueStateText="{oControlModel>/SubclassL02/valueStateText}"
+															valueHelpRequest="handleValueHelp">
+															<customData>
+																<core:CustomData key="key" value="sb_wrk02_code"/>
+																<core:CustomData key="text" value="sub_work_02"/>
+																<core:CustomData key="SFPersistenceKey" value="SubWork02_SF_AS_PersistenceKey"/>
+																<core:CustomData key="reqFields" value="sb_wrk02_code"/>
+																<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_SUBCLASS02', entityType: 'ZWRK_SUBCLASS02Type'}"/>
+																<core:CustomData key="filterArray"
+																	value="{filter:[ {key: 'mn_wrk_code', value: 'MainWorkNature'}, {key: 'sb_wrk01_code', value: 'SubclassL01'} ]}"/>
+																<core:CustomData key="mode" value="SingleSelectMaster"/>
+															</customData>
+															<suggestionItems>
+																<core:ListItem key="{sb_wrk02_code}" text="{sub_work_02}"/>
+															</suggestionItems>
+														</Input>
+													</f:fields>
+												</f:FormElement>
+												<f:FormElement label="" visible="false">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.BCRatio}"/>
+													</f:label>
+													<f:fields>
+														<Input change="onFieldChange" liveChange="onFieldLiveChange" value="{BcRatio}" textAlign="Right"
+															editable="{= ${oControlModel>/BcRatio/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															valueState="{= ${oControlModel>/BcRatio/valueState}}" valueStateText="{= ${oControlModel>/BcRatio/valueStateText}}" tooltip="{BcRatio}"/>
+													</f:fields>
+												</f:FormElement>
+											</f:FormContainer>
+										</f:formContainers>
+									</f:Form>
+								</VBox>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+			<!--changes ended by lahari-->
+			<uxap:ObjectPageSection id="UA" title="{i18n>detail.ObjPageSection.title.UA}" showTitle="false" visible="{detailView>/bUAVisible}">
+				<uxap:ObjectPageSubSection>
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ObjPageSection.title.UA}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<f:Form editable="true">
+									<f:layout>
+										<f:ResponsiveGridLayout labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0"
+											emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="3" columnsL="3" columnsM="3" singleContainerFullSize="false"/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer>
+											<f:formElements>
+												<f:FormElement visible="{= ${oControlModel>/Agency/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.sf.label.Agency}" required="{= ${oControlModel>/Agency/mandatory}}"/>
+													</f:label>
+													<f:fields>
+														<Input change="onFieldChange" placeholder="{i18n>detail.ops.panel.content.sf.label.PAgency}" liveChange="onFieldLiveChange" value="{Agency}"
+															editable="{= ${oControlModel>/Agency/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															valueState="{= ${oControlModel>/Agency/valueState}}" valueStateText="{= ${oControlModel>/Agency/valueStateText}}"
+															maxLength="{oControlModel>/Agency/maxLength}" type="{oControlModel>/Agency/type}" tooltip="{Agency}"/>
+													</f:fields>
+												</f:FormElement>
+												<f:FormElement visible="{= ${oControlModel>/ValueSactioned/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.sf.label.VldSanctions}" required="{= ${oControlModel>/ValueSactioned/mandatory}}"/>
+													</f:label>
+													<f:fields>
+														<Input change="onFieldChange" placeholder="{i18n>detail.ops.panel.content.sf.label.PVldSanctions}" liveChange="onFieldLiveChange"
+															app:bindPath="ValueSactioned"
+															value="{path:'ValueSactioned', type: 'sap.ui.model.odata.type.Decimal', formatOptions: {groupingSize: 2, groupingBaseSize: 3, maxIntegerDigits: 12}, constraints: {precision: 12, scale: 2}}"
+															textAlign="Right" editable="{= ${oControlModel>/ValueSactioned/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															valueState="{= ${oControlModel>/ValueSactioned/valueState}}" valueStateText="{= ${oControlModel>/ValueSactioned/valueStateText}}"
+															tooltip="{ValueSanctioned}"/>
+														<Input change="onFieldChange" liveChange="onFieldLiveChange" value="{CurrencySanctioned}" showValueHelp="true" showSuggestion="true"
+															valueHelpRequest="handleCurrValueHelp"
+															editable="{= ${oControlModel>/CurrencySanctioned/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															valueState="{= ${oControlModel>/CurrencySanctioned/valueState}}" valueStateText="{= ${oControlModel>/CurrencySanctioned/valueStateText}}"
+															maxLength="{oControlModel>/CurrencySanctioned/maxLength}" type="{oControlModel>/CurrencySanctioned/type}"
+															suggestionItems="{/ZWRK_C_CURRNKEY}" tooltip="{CurrencySanctioned}">
+															<suggestionItems>
+																<core:Item key="{waers}" text="{ktext}"/>
+															</suggestionItems>
+															<layoutData>
+																<l:GridData span="XL4 L4 M4 S4"/>
+															</layoutData>
+														</Input>
+													</f:fields>
+												</f:FormElement>
+											</f:formElements>
+										</f:FormContainer>
+										<f:FormContainer>
+											<f:formElements>
+												<f:FormElement visible="{= ${oControlModel>/RefOrdnum/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.sf.label.RefOrderNo}" required="{= ${oControlModel>/RefOrdnum/mandatory}}"/>
+													</f:label>
+													<f:fields>
+														<Input change="onFieldChange" placeholder="{i18n>detail.ops.panel.content.sf.label.PRefOrderNo}" liveChange="onFieldLiveChange"
+															value="{RefOrdnum}" editable="{= ${oControlModel>/RefOrdnum/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															valueState="{= ${oControlModel>/RefOrdnum/valueState}}" valueStateText="{= ${oControlModel>/RefOrdnum/valueStateText}}"
+															maxLength="{oControlModel>/RefOrdnum/maxLength}" type="{oControlModel>/RefOrdnum/type}" tooltip="{RefOrdnum}"/>
+													</f:fields>
+												</f:FormElement>
+												<f:FormElement visible="{detailView>/bUAVisible}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.DCWType}" required="{detailView>/bUAVisible}"/>
+													</f:label>
+													<f:fields>
+														<Select app:bindPath="DcwType" id="idDcwType" change="onSelectChange" selectedKey="{DcwType}" items="{/ZWRK_C_DCWSELECT}"
+															forceSelection="true" enabled="{= ${detailView>/bUAVisible} &amp;&amp; (${detailView>/stateId} !== 'D')}">
+															<items>
+																<core:Item text="{Selection_Type}" key="{DCW_Selection_ID}"/>
+															</items>
+														</Select>
+													</f:fields>
+												</f:FormElement>
+											</f:formElements>
+										</f:FormContainer>
+										<f:FormContainer>
+											<f:formElements>
+												<f:FormElement visible="{= ${oControlModel>/RefDate/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.sf.label.Date}" required="{= ${oControlModel>/RefDate/mandatory}}"/>
+													</f:label>
+													<f:fields>
+														<DatePicker change="onFieldChange" placeholder="{i18n>detail.ops.panel.content.sf.label.PDate}"
+															value="{path:'RefDate', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, UTC: true}}"
+															editable="{= ${oControlModel>/RefDate/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"/>
+													</f:fields>
+												</f:FormElement>
+											</f:formElements>
+										</f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+								<Table id="idWorksSrcHoA" inset="false" mode="None" growing="true" growingThreshold="999"
+									noDataText="{= ${detailView>/bOwnDCW} ? ${i18n>detail.ops.panel.content.table.source.noDataNeeded} : ${i18n>detail.ops.panel.content.table.source.noData}}"
+									items="{WrkDcwHOADDO}">
+									<headerToolbar>
+										<Toolbar>
+											<content>
+												<Title text="{i18n>detail.ops.panel.content.table.source.title}({detailView>/SrcDDOTableRowCount})" level="H2"/>
+												<ToolbarSpacer/>
+												<!--<Button icon="sap-icon://add" tooltip="{i18n>tooltip.addToTable}" type="Transparent" press="addNewRowSrcDDOs"-->
+												<!--	visible="{= (((${DcwType} === '02') || (${Category} === '02')) &amp;&amp; (((${detailView>/stateId} !== 'D') &amp;&amp; (${Status} === 'E0001')) || (${detailView>/stateId} === 'E')) ? true: false)}"/>-->
+												<Button icon="sap-icon://add" tooltip="{i18n>tooltip.addToTable}" type="Transparent" press="addNewRowSrcDDOs"
+													visible="{= ((${DcwType} === '02' ? true: false) &amp;&amp; (((${detailView>/stateId} !== 'D') &amp;&amp; (${Status} === 'E0001')) || (${detailView>/stateId} === 'C')) ? true: false)}"/>
+											</content>
+										</Toolbar>
+									</headerToolbar>
+									<columns>
+										<Column visible="false">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.DDO}"/>
+										</Column>
+										<Column width="2rem" hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.ItemNo}"/>
+										</Column>
+										<Column width="6rem" hAlign="Center">
+											<Label text="{i18n>detail.ops.panel.content.table.column.text.srcDDO}" required="{= ${oControlModel>/SourceDdo/mandatory}}"/>
+										</Column>
+										<Column width="9rem" hAlign="Center">
+											<Label text="{i18n>detail.ops.panel.content.table.column.text.srcHOA}" required="{= ${oControlModel>/SourceHoa/mandatory}}"/>
+										</Column>
+										<Column width="6rem" hAlign="Center">
+											<Label text="{i18n>detail.ops.panel.content.table.column.text.FundAgency}"/>
+										</Column>
+										<!-- <Column width="3rem">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.Share}" />
+										</Column> -->
+										<!-- <Column width="6rem" hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.      s
+											' }" />
+										</Column> -->
+										<Column width="6rem" hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.validFrom}"/>
+										</Column>
+										<Column width="6rem" hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.validTo}"/>
+										</Column>
+										<Column width="1rem" visible="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"
+											hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.delete}"/>
+										</Column>
+									</columns>
+									<items>
+										<ColumnListItem id="idSrcHoaListItem">
+											<cells>
+												<Text text="{HoaGuid}" visible="false"/>
+												<Input value="{ItemNo}" tooltip="{ItemNo}" editable="false" textAlign="Right"/>
+												<Input id="SourceDdo" placeholder="{i18n>detail.ops.panel.content.table.column.text.PsrcDDO}" change="onSrcDdoChange"
+													app:bindPath="SourceDdo" value="{DdoDes}" required="{= ${oControlModel>/SourceDdo/mandatory}}" showValueHelp="true" valueHelpOnly="true"
+													valueHelpRequest="handleDDOValueHelp"
+													editable="{= ${oControlModel>/SourceDdo/display} &amp;&amp; (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"
+													valueState="{oControlModel>/SourceDdo/valueState}" valueStateText="{oControlModel>/SourceDdo/valueStateText}"
+													maxLength="{oControlModel>/SourceDdo/maxLength}" type="{oControlModel>/SourceDdo/type}" tooltip="{SourceDdo}"></Input>
+												<Input id="SourceHoa" change="onSrcDdoChange" placeholder="{i18n>detail.ops.panel.content.table.column.text.PsrcHOA}"
+													app:bindPath="SourceHoa" value="{SourceHoa}" required="{= ${oControlModel>/SourceHoa/mandatory}}" showValueHelp="true" valueHelpOnly="true"
+													valueHelpRequest="handleHoaValueHelp"
+													editable="{= ${oControlModel>/SourceHoa/display} &amp;&amp; (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"
+													valueState="{= ${oControlModel>/SourceHoa/valueState}}" valueStateText="{oControlModel>/SourceHoa/valueStateText}"
+													maxLength="{oControlModel>/SourceHoa/maxLength}" type="{oControlModel>/Hoa/type}" tooltip="{SourceHoa}"></Input>
+												<Input editable="false" value="{FundAgencyDesc}" tooltip="{FundAgencyDesc}"/>
+												<!-- <Input change="onSrcDdoShareChange"
+													value="{SourceZShare}" 
+													editable="{= ${oControlModel>/SourceZShare/display} &amp;&amp; (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"
+													valueState="{= ${oControlModel>/SourceZShare/valueState}}" 
+													valueStateText="{= ${oControlModel>/SourceZShare/valueStateText}}" 
+													maxLength="{oControlModel>/SourceZShare/maxLength}" 
+													type="{oControlModel>/SourceZShare/type}"
+													textDirection="LTR"
+													textAlign="Right"
+													tooltip="{SourceZShare}"/> -->
+												<!-- <Input id="idPicCode"
+													change="onSrcDdoChange"
+													app:bindPath="PicCode"
+													value="{PicsCode}"
+													required="{= ${oControlModel>/PicsCode/mandatory}}"
+													showValueHelp="true"
+													valueHelpOnly="true"
+													valueHelpRequest="handlePicCodeValueHelp"
+													editable="{= ${oControlModel>/PicsCode/display} &amp;&amp; (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false) &amp;&amp; (${PicsCode} !== '' ? true : false)}"
+													valueState="{oControlModel>/PicsCode/valueState}" 
+													valueStateText="{oControlModel>/PicsCode/valueStateText}" 
+													maxLength="{oControlModel>/PicsCode/maxLength}" 
+													type="{oControlModel>/PicsCode/type}"
+													tooltip="{PicsCode}">
+												</Input> -->
+												<DatePicker change="onSrcDdoChange" id="SourceValidFrom" placeholder="{i18n>detail.ops.panel.content.table.column.text.PvalidFrom}"
+													app:bindPath="SourceValidFrom"
+													value="{path:'SourceValidFrom', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, UTC: true}}"
+													editable="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"/>
+												<DatePicker change="onSrcDdoChange" id="SourceValidTo" placeholder="{i18n>detail.ops.panel.content.table.column.text.PvalidTo}"
+													app:bindPath="SourceValidTo"
+													value="{path:'SourceValidTo', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, UTC: true}}"
+													editable="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"/>
+												<Button icon="sap-icon://delete" tooltip="{i18n>tooltip.delFromTable}" type="Transparent" press="onSourceDeleteDDO"
+													visible="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"/>
+											</cells>
+										</ColumnListItem>
+									</items>
+								</Table>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+			<!--changes by Lahari-->
+			<uxap:ObjectPageSection id="idDepartment" title="{i18n>detail.ObjPageSection.title.Department}" showTitle="false"
+				class="sapUiLargePaddingBottom">
+				<uxap:ObjectPageSubSection>
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true" width="auto">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ops.panel.content.label.Deptment}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<VBox>
+									<f:Form editable="true">
+										<f:layout>
+											<f:ResponsiveGridLayout class="noPadding" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0"
+												emptySpanM="0" emptySpanS="0" columnsXL="3" columnsL="3" columnsM="3"/>
+										</f:layout>
+										<!--changes added by lahari-->
+										<!--<f:formContainers>-->
+										<f:FormContainer >
+											<f:FormElement visible="{= ${oControlModel>/Category/visible}}">
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.Catogery}" required="{= ${oControlModel>/Category/mandatory}}"/>
+												</f:label>
+												<f:fields>
+													<Select app:bindPath="Category" app:clearKey="Category" id="idCategory" change="onSelectChangeCategory" selectedKey="{Category}"
+														forceSelection="false" enabled="{= ${oControlModel>/Category/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+														valueState="{= ${oControlModel>/Category/valueState}}" valueStateText="{= ${oControlModel>/Category/valueStateText}}"></Select>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+										<f:FormContainer >
+											<f:FormElement label="" visible="{= ${oControlModel>/Scheme/visible}}">
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.Scheme}" required="{= ${oControlModel>/Scheme/mandatory}}"/>
+												</f:label>
+												<f:fields>
+													<Select id="idSchemeCode" app:bindPath="Scheme" change="onSelectChange" items="{path: '/ZWRK_C_SCHEMES', sorter:{path:'schemdesc'}}"
+														selectedKey="{Scheme}" enabled="{= ${oControlModel>/Scheme/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" forceSelection="false"
+														valueState="{= ${oControlModel>/Scheme/valueState}}" valueStateText="{= ${oControlModel>/Scheme/valueStateText}}">
+														<items>
+															<core:Item text="{schemdesc}" key="{schemeid}"/>
+														</items>
+													</Select>
+													<Button visible="{= ${oControlModel>/Scheme/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" press="_handlePressAddNewScheme"
+														icon="sap-icon://add" tooltip="{i18n>detail.frag.title.screateScheme}">
+														<layoutData>
+															<l:GridData span="XL1 L2 M2 S4"/>
+														</layoutData>
+													</Button>
+												</f:fields>
+											</f:FormElement>
+											<!--<f:FormElement visible="{= ${oControlModel>/EmergencyAs/visible}}">-->
+											<!--	<f:label>-->
+											<!--		<Label text="{i18n>detail.ops.panel.content.label.Emergency}" required="{= ${oControlModel>/EmergencyAs/mandatory}}"/>-->
+											<!--	</f:label>-->
+											<!--	<f:fields>-->
+											<!--		<CheckBox app:bindPath="EmergencyAs" tooltip="{= ${EmergencyAs} === true ? ${i18n>tooltip.Emergency} : ${i18n>tooltip.NoEmergency}}"-->
+											<!--			selected="{EmergencyAs}" select="onFieldChange" editable="{detailView>/bEditable}"/>-->
+											<!--	</f:fields>-->
+											<!--</f:FormElement>-->
+										</f:FormContainer>
+										<!--</f:formContainers>-->
+										<!--changes ended by lahari-->
+										<f:formContainers>
+											<!-- <f:FormContainer >
+											<f:FormElement label="" visible="{= ${oControlModel>/Udf1/visible}}">
+                                                    <f:label>
+                                                        <Label text='{i18n>detail.ops.panel.content.label.Position}' required="{= ${oControlModel>/Udf1/mandatory}}"/>
+                                                    </f:label>
+                                                    <f:fields>
+                                                        <Input change="onFieldChange" 
+														liveChange="onFieldLiveChange"
+                                                        app:bindPath="Position"
+														value="{Udf1}"
+														showValueHelp="true"
+														valueHelpOnly="true"
+														valueHelpRequest="handlePositionValueHelp"
+														editable="{= (${oControlModel>/Udf1/display} &amp;&amp; ${detailView>/stateId} !== 'D' &amp;&amp; ${detailView>/WfRole} === 'M') ? true :false }"
+														valueState="{= ${oControlModel>/Udf1/valueState}}" 
+														valueStateText="{= ${oControlModel>/Udf1/valueStateText}}" 
+														templateShareable= "false"
+														id="idUserPosition">
+													</Input>
+                                                    </f:fields>
+                                                </f:FormElement>
+                                            </f:FormContainer > -->
+											<f:FormContainer >
+												<!-- <f:title>
+													<core:Title text="{i18n>detail.ops.panel.content.form.formContainer.title.department}"/>
+													</f:title> -->
+												<f:FormElement label="" visible="{= ${oControlModel>/InitiatinDept/visible}}">
+													<f:label>
+														<Label text='{i18n>detail.ops.panel.content.label.InitDept}' required="{= ${oControlModel>/InitiatinDept/mandatory}}"/>
+													</f:label>
+													<f:fields>
+														<Select id="idInitDept" items="{path:'/Zwrk_AS_Sanc_Dept', sorter:{ path:'Department'}}" change="onSelectChangeSanctDept"
+															selectedKey="{InitiatinDept}" valueState="{= ${oControlModel>/InitiatinDept/valueState}}"
+															valueStateText="{= ${oControlModel>/InitiatinDept/valueStateText}}"
+															enabled="{= ${oControlModel>/InitiatinDept/display} &amp;&amp; (${detailView>/stateId} !== 'D') &amp;&amp; !${MigrationInd}}"
+															forceSelection="false">
+															<items>
+																<core:Item text="{Department} : {Depart_name}" key="{Department}"/>
+															</items>
+														</Select>
+													</f:fields>
+												</f:FormElement>
+											</f:FormContainer>
+											<f:FormContainer>
+												<!-- <f:title>
+													<core:Title />
+												</f:title> -->
+												<f:FormElement visible="{= ${oControlModel>/ExecutingDept/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.ExeDept}" required="{= ${oControlModel>/ExecutingDept/mandatory}}"/>
+													</f:label>
+													<f:fields>
+														<!--<Input id="idExecDept" showValueHelp="true" value="{DDO}" name="DDOCode" valueHelpOnly="true" valueHelpRequest="oHandelHOAF4Help" editable="true"/>-->
+														<Select app:bindPath="ExecutingDept" app:clearKey="ExecutingDept" id="idExecDept"
+															items="{path:'/ZWRK_C_EXECDEPTLIST', sorter:{ path:'fictr'}}" change="onSelectChangeExectDept" selectedKey="{ExecutingDept}"
+															enabled="{= ${detailView>/bEditExectDept} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+															valueState="{= ${oControlModel>/ExecutingDept/valueState}}" valueStateText="{= ${oControlModel>/ExecutingDept/valueStateText}}"
+															forceSelection="false">
+															<items>
+																<core:Item text="{fictr} : {beschr}" key="{fictr}"/>
+															</items>
+														</Select>
+													</f:fields>
+												</f:FormElement>
+											</f:FormContainer>
+											<f:FormContainer>
+												<f:FormElement >
+													<f:fields></f:fields>
+												</f:FormElement>
+											</f:FormContainer>
+										</f:formContainers>
+									</f:Form>
+									<!-- <VBox id="idTgtHoa">
+									</VBox> -->
+									<Table id="idWorksHoA" inset="false" mode="None" items="{WrkASHOA}" growing="true" growingThreshold="999">
+										<headerToolbar>
+											<Toolbar>
+												<content>
+													<Title text="{i18n>detail.ops.panel.content.table.hoaddo.title}({detailView>/DDOTableRowCount})" level="H2"/>
+													<ToolbarSpacer/>
+													<Button icon="sap-icon://add" tooltip="{i18n>tooltip.addToTable}" type="Transparent" press="addNewRowDDOs"
+														visible="{= ((${detailView>/stateId} !== 'D') || (${detailView>/stateId} === 'C')) ? true: false}"/>
+												</content>
+											</Toolbar>
+										</headerToolbar>
+										<columns>
+											<Column visible="false">
+												<Label text="{i18n>detail.ops.panel.content.table.column.text.DDO}"/>
+											</Column>
+											<Column width="2.7rem" hAlign="Center">
+												<Label text="{i18n>detail.ops.panel.content.table.column.text.ItemNo}" wrapping="true"/>
+											</Column>
+											<Column width="6rem" hAlign="Center">
+												<Label text="{i18n>detail.ops.panel.content.table.column.text.DDO}" wrapping="true" required="true"/>
+											</Column>
+											<Column width="9rem" hAlign="Center">
+												<Label text="{i18n>detail.ops.panel.content.table.column.text.HeadOfAccount}" wrapping="true" required="true"/>
+											</Column>
+											<Column width="3rem" hAlign="Center">
+												<Label text="{i18n>detail.ops.panel.content.table.column.text.Share}" wrapping="true" required="true"/>
+											</Column>
+											<Column width="3rem" visible="false">
+												<Label text="{i18n>detail.ops.panel.content.table.column.text.RefNum}" wrapping="true"/>
+											</Column>
+											<Column width="6rem" hAlign="Center">
+												<Label text="{i18n>detail.ops.panel.content.table.column.text.FundAgency}" wrapping="true"/>
+											</Column>
+											<Column width="6rem" hAlign="Center">
+												<Label text="{i18n>detail.ops.panel.content.table.column.text.validFrom}" wrapping="true"/>
+											</Column>
+											<Column width="6rem" hAlign="Center">
+												<Label text="{i18n>detail.ops.panel.content.table.column.text.validTo}" wrapping="true"/>
+											</Column>
+											<Column width="1.6rem" visible="{= ${detailView>/bEditable}? true: false}" hAlign="Center">
+												<Label text="{i18n>detail.ops.panel.content.table.column.text.delete}"/>
+											</Column>
+										</columns>
+										<items>
+											<ColumnListItem id="idHoaListItem">
+												<cells>
+													<Text text="{HoaGuid}" visible="false"/>
+													<Input value="{ItemNo}" tooltip="{ItemNo}" editable="false" textAlign="Right"/>
+													<Input change="onDdoChange" app:bindPath="Ddo" placeholder="{i18n>detail.ops.panel.content.table.column.text.PDDO}" value="{DdoDes}"
+														required="{= ${oControlModel>/Ddo/mandatory}}" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleDDOValueHelp"
+														editable="{= ${oControlModel>/Ddo/display} &amp;&amp; (${detailView>/stateId} !== 'D') ? true: false}"
+														valueState="{oControlModel>/Ddo/valueState}" valueStateText="{oControlModel>/Ddo/valueStateText}" maxLength="{oControlModel>/Ddo/maxLength}"
+														type="{oControlModel>/Ddo/type}" tooltip="{Ddo}" id="Ddo"/>
+													<Input change="onDdoChange" app:bindPath="Hoa" placeholder="{i18n>detail.ops.panel.content.table.column.text.PHeadOfAccount}" value="{Hoa}"
+														required="{= ${oControlModel>/Hoa/mandatory}}" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleHoaValueHelp"
+														editable="{= ${oControlModel>/Hoa/display} &amp;&amp; (${detailView>/stateId} !== 'D') ? true: false}"
+														valueState="{= ${oControlModel>/Hoa/valueState}}" valueStateText="{oControlModel>/Hoa/valueStateText}"
+														maxLength="{oControlModel>/Hoa/maxLength}" type="{oControlModel>/Hoa/type}" tooltip="{Hoa}" id="Hoa"></Input>
+													<Input change="onDdoShareChange" placeholder="{i18n>detail.ops.panel.content.table.column.text.PShare}" liveChange="onDdoShareLiveChange"
+														value="{Zshare}" editable="{= ${oControlModel>/Zshare/display} &amp;&amp; (${detailView>/stateId} !== 'D') ? true: false}"
+														valueState="{= ${oControlModel>/Zshare/valueState}}" valueStateText="{= ${oControlModel>/Zshare/valueStateText}}"
+														maxLength="{oControlModel>/Zshare/maxLength}" type="{oControlModel>/Zshare/type}" textAlign="Right" tooltip="{Zshare}"/>
+													<Input change="onDdoChange" value="{RefNumber}" visible="false"
+														editable="{= ${oControlModel>/RefNumber/display} &amp;&amp; (${detailView>/stateId} !== 'D') ? true: false}" liveChange="onFieldLiveChange"
+														valueState="{= ${oControlModel>/RefNumber/valueState}}" valueStateText="{= ${oControlModel>/RefNumber/valueStateText}}"
+														maxLength="{oControlModel>/RefNumber/maxLength}" type="{oControlModel>/RefNumber/type}" textAlign="Right" tooltip="{RefNumber}"/>
+													<Input editable="false" value="{FundAgencyDesc}" tooltip="{FundAgencyDesc}"/>
+													<DatePicker id="ValidFrom" app:bindPath="ValidFrom"
+														value="{path:'ValidFrom', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, UTC: true}}"
+														change="onDdoChange" editable="false"/>
+													<!--valid from changed to non editable- cfms_ctm_npv(08_02_23)-->
+													<!--  old code editable="{= (${detailView>/stateId} !== 'D')? true: false}"-->
+													<DatePicker id="ValidTo" app:bindPath="ValidTo"
+														value="{path:'ValidTo', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, UTC: true}}"
+														change="onDdoChange" editable="{= (${detailView>/stateId} !== 'D') ? true: false}"/>
+													<Button icon="sap-icon://delete" tooltip="{i18n>tooltip.delFromTable}" type="Transparent" press="onDeleteDDO"
+														visible="{= (${detailView>/stateId} !== 'D') ? true: false}"/>
+												</cells>
+											</ColumnListItem>
+										</items>
+									</Table>
+								</VBox>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+			<uxap:ObjectPageSection id="idEst" title="{i18n>detail.ObjPageSection.title.Est}" showTitle="false">
+				<uxap:ObjectPageSubSection>
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true" width="auto">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ObjPageSection.title.Est}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<Table id="idWorksEstim" inset="false" mode="None" items="{WrkASEstimates}" growing="true" growingScrollToLoad="true" growingThreshold="999">
+									<headerToolbar>
+										<Toolbar>
+											<content>
+												<Title text="{i18n>detail.ops.panel.content.table.Title}({detailView>/ESTTableRowCount})"/>
+												<ToolbarSpacer/>
+												<Button icon="sap-icon://add" tooltip="{i18n>tooltip.addToTable}" type="Transparent" width="5rem" press="onAddNewEstimation"
+													visible="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"/>
+												<!-- <Button icon="sap-icon://delete" press="onDeleteEstimate" visible="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"/> -->
+											</content>
+										</Toolbar>
+									</headerToolbar>
+									<columns>
+										<Column hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.EstimateId}"/>
+										</Column>
+										<Column hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.EstimateType}" textDirection="RTL"/>
+										</Column>
+										<Column hAlign="Center" visible="false">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.Desc}" textDirection="RTL"/>
+										</Column>
+										<Column hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.Desc}" textDirection="RTL"/>
+										</Column>
+										<Column hAlign="End">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.Value}" textDirection="RTL"/>
+										</Column>
+										<Column hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.Status}" textDirection="RTL"/>
+										</Column>
+										<Column width="3rem" visible="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.delete}"/>
+										</Column>
+									</columns>
+									<items>
+										<ColumnListItem id="idEstItem">
+											<cells>
+												<Link text="{EstId}" emphasized="true" press="onEstItemPress"/>
+												<Text text="{EstTypeDesc}"/>
+												<!--<Link-->
+												<!--	text="{EstId}"-->
+												<!--	emphasized="true"-->
+												<!--	href="{parts:[{path : 'EstGuid'}], formatter: '.formatter.getEstimationLink'}" />-->
+												<!-- <Input 
+													value="{EstId}"
+													editable="false"
+													tooltip="{EstId}">
+												</Input > -->
+												<Input tooltip="{EstDesc}" value="{EstDesc}" editable="false" textAlign="Right" visible="false"/>
+												<Text text="{EstDesc}" tooltip="{EstDesc}" textAlign="Center"/>
+												<HBox justifyContent="End">
+													<Text
+														text="{path:'EstTotValue', type:'sap.ui.model.odata.type.Decimal', formatOptions: {groupingSize: 2, groupingBaseSize: 3}, constraints: {precision: 12, scale: 2}} {EstCurrency}"
+														tooltip="{EstTotValue}" textAlign="End"/>
+													<!-- <Text text="{EstCurrency}"/> -->
+												</HBox>
+												<Button text="{= ${EstStatus} === 'X' ? 'Draft' : 'Saved'}" icon="{= ${EstStatus} === 'X' ? 'sap-icon://request' : 'sap-icon://complete'}"
+													enabled="false"/>
+												<Button icon="sap-icon://delete" tooltip="{i18n>tooltip.delFromTable}" type="Transparent" press="onDeleteEstimate"
+													visible="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"/>
+											</cells>
+										</ColumnListItem>
+									</items>
+								</Table>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+			<uxap:ObjectPageSection id="idDDOMap_work" title="{i18n>detail.ObjPageSection.title.DDOMappingwork}" showTitle="false">
+				<uxap:ObjectPageSubSection>
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true" width="auto">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ObjPageSection.title.DDOMappingwork}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<Table id="idWorksDDOMapping_work" inset="false" mode="None" items="{/DDO_MapDataSet}" growing="true" growingScrollToLoad="true"
+									growingThreshold="999">
+									<headerToolbar>
+										<Toolbar>
+											<content>
+												<Title text="{i18n>detail.ops.panel.content.table.DDOMappingWork}({detailView>/DDOMapWorkTableRowCount})"/>
+												<ToolbarSpacer/>
+												<!--<Button icon="sap-icon://add" tooltip="{i18n>tooltip.addToTable}" type="Transparent" width="5rem" press="onAddNewEstimation"-->
+												<!--	visible="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}" enabled="false"/>-->
+												<!-- <Button icon="sap-icon://delete" press="onDeleteEstimate" visible="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"/> -->
+											</content>
+										</Toolbar>
+									</headerToolbar>
+									<columns>
+										<Column hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.EstimateId}"/>
+										</Column>
+										<Column hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.DDOMapping}" textDirection="RTL"/>
+										</Column>
+										<Column hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.DDOMappingDesc}" textDirection="RTL"/>
+										</Column>
+										<!--<Column hAlign="Center" visible="false">-->
+										<!--	<Text text="{i18n>detail.ops.panel.content.table.column.text.Desc}" textDirection="RTL"/>-->
+										<!--</Column>-->
+										<Column hAlign="Center">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.Desc}" textDirection="RTL"/>
+										</Column>
+										<Column hAlign="End">
+											<Text text="{i18n>detail.ops.panel.content.table.column.text.Value}" textDirection="RTL"/>
+										</Column>
+										<!--<Column hAlign="Center">-->
+										<!--	<Text text="{i18n>detail.ops.panel.content.table.column.text.Status}" textDirection="RTL"/>-->
+										<!--</Column>-->
+										<!--<Column width="3rem" visible="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}">-->
+										<!--	<Text text="{i18n>detail.ops.panel.content.table.column.text.delete}"/>-->
+										<!--</Column>-->
+									</columns>
+									<items>
+										<ColumnListItem id="idDDOMapping_work">
+											<cells>
+												<Text text="{EstId}"/>
+												<!--<Text text="{DDO}"/>-->
+												<Input change="onDdoChange" app:bindPath="Ddo" placeholder="{i18n>detail.ops.panel.content.table.column.text.PDDO}" value="{DDO_Code}"
+													required="{= ${oControlModel>/Ddo/mandatory}}" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleDDOValueHelp"
+													editable="{= ${oControlModel>/Ddo/display} &amp;&amp; (${detailView>/stateId} !== 'D') ? true: false}"
+													valueState="{oControlModel>/Ddo/valueState}" valueStateText="{oControlModel>/Ddo/valueStateText}" maxLength="{oControlModel>/Ddo/maxLength}"
+													type="{oControlModel>/Ddo/type}" tooltip="{DdoDes}" id="idDDO_Mapping"/>
+												<!--<Input id="idDDO_Mapping" showValueHelp="true" value="{DDO}" name="DDOCode" valueHelpOnly="true" valueHelpRequest="oHandelHOAF4Help" editable="true"/>-->
+												<Text text="{DDO_Desc}"/>
+												<!--<Link-->
+												<!--	text="{EstId}"-->
+												<!--	emphasized="true"-->
+												<!--	href="{parts:[{path : 'EstGuid'}], formatter: '.formatter.getEstimationLink'}" />-->
+												<!-- <Input 
+													value="{EstId}"
+													editable="false"
+													tooltip="{EstId}">
+												</Input > -->
+												<Input tooltip="{EstDesc}" value="{EstDesc}" editable="false" textAlign="Right" />
+												<!--<Text text="{EstDesc}" tooltip="{EstDesc}" textAlign="Center" id="estdesc_ddomap"/>-->
+												<HBox justifyContent="End">
+													<Text
+														text="{path:'EstTotValue', type:'sap.ui.model.odata.type.Decimal', formatOptions: {groupingSize: 2, groupingBaseSize: 3}, constraints: {precision: 12, scale: 2}} {EstCurrency}"
+														tooltip="{EstTotValue}" textAlign="End" id="estvalue_ddomap"/>
+													<!-- <Text text="{EstCurrency}"/> -->
+												</HBox>
+												<!--<Button text="{= ${EstStatus} === 'X' ? 'Draft' : 'Saved'}" icon="{= ${EstStatus} === 'X' ? 'sap-icon://request' : 'sap-icon://complete'}"-->
+												<!--	enabled="false"/>-->
+												<!--<Button icon="sap-icon://delete" tooltip="{i18n>tooltip.delFromTable}" type="Transparent" press="onDeleteEstimate"-->
+												<!--	visible="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"/>-->
+											</cells>
+										</ColumnListItem>
+									</items>
+								</Table>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+			<uxap:ObjectPageSection id="idLocation" title="{i18n>detail.ops.panel.title.Location}" showTitle="false">
+				<uxap:ObjectPageSubSection mode="Collapsed">
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ops.panel.title.Location}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<f:Form editable="true">
+									<f:layout>
+										<f:ResponsiveGridLayout class="noPadding" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0"
+											emptySpanM="0" emptySpanS="0" columnsXL="3" columnsL="3" columnsM="3"/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer >
+											<f:FormElement visible="{= ${oControlModel>/LocalClass/visible}}">
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.class}" required="{= ${oControlModel>/LocalClass/mandatory}}"/>
+												</f:label>
+												<f:fields>
+													<Select id="idLocationClass" app:bindPath="LocalClass" change="onSelectChange" selectedKey="{LocalClass}"
+														enabled="{= ${oControlModel>/LocalClass/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" forceSelection="false"
+														visible="{oControlModel>/LocalClass/visible}" valueState="{= ${oControlModel>/LocalClass/valueState}}"
+														valueStateText="{= ${oControlModel>/LocalClass/valueStateText}}"></Select>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+										<f:FormContainer ></f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+								<f:Form editable="true">
+									<f:layout>
+										<f:ResponsiveGridLayout class="noPadding" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0"
+											emptySpanM="0" emptySpanS="0" columnsXL="3" columnsL="3" columnsM="3"/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer >
+											<f:FormElement label="" visible="{= ${oControlModel>/Village/visible}}">
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.village}" required="{= ${oControlModel>/Village/mandatory}}"/>
+												</f:label>
+												<f:fields>
+													<RadioButton app:bindPath='village' groupName="GroupB"
+														enabled="{= ${oControlModel>/Village/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" selected="{location>/vVillage}"
+														select="onRadioSelect">
+														<layoutData>
+															<l:GridData span="XL1 L1 M2 S4"/>
+														</layoutData>
+													</RadioButton>
+													<MultiInput app:bindPath="Village" placeholder="{i18n>detail.ops.panel.content.table.column.vh.title.village}"
+														value="{parts:[{path: 'LocationDetails'},{path: 'LocationDetailsx'}], formatter:'.formatter.formatVillage'}" id="idSelectVillage"
+														change="onSelectChange" valueHelpOnly="true" tokenUpdate="onFieldChange" suggestionItemSelected="handleSuggestionItemSelected"
+														showSuggestion="true" showValueHelp="true" valueHelpRequest="handleValueHelp"
+														enabled="{= ${oControlModel>/Village/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+														editable="{= ${oControlModel>/Village/display} &amp;&amp; (${detailView>/stateId} !== 'D') &amp;&amp; ${location>/vVillage}}"
+														visible="{oControlModel>/Village/visible}" suggestionItems="{/ZWRK_C_VILLAGES_LIST}" valueState="{= ${oControlModel>/Village/valueState}}"
+														valueStateText="{= ${oControlModel>/Village/valueStateText}}">
+														<customData>
+															<core:CustomData key="key" value="village"/>
+															<core:CustomData key="text" value="villagex"/>
+															<core:CustomData key="SFPersistenceKey" value="Village_SF_AS_PersistenceKey"/>
+															<core:CustomData key="reqFields" value="district,mandal,village"/>
+															<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_C_VILLAGES_LIST', entityType: 'ZWRK_C_VILLAGES_LISTType'}"/>
+															<core:CustomData key="filterArray" value="{filter:[]}"/>
+															<core:CustomData key="mode" value="MultiSelect"/>
+														</customData>
+														<suggestionItems>
+															<core:Item text="{villagename}" key="{village}"/>
+														</suggestionItems>
+													</MultiInput>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+										<f:FormContainer >
+											<f:FormElement visible="{= ${oControlModel>/Mandal/visible}}">
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.mandal}" required="{= ${oControlModel>/Mandal/mandatory}}"/>
+												</f:label>
+												<f:fields>
+													<RadioButton app:bindPath="mandal" groupName="GroupB"
+														enabled="{= ${oControlModel>/Mandal/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" selected="{location>/vMandal}"
+														select="onRadioSelect">
+														<layoutData>
+															<l:GridData span="XL1 L1 M2 S4"/>
+														</layoutData>
+													</RadioButton>
+													<MultiInput app:bindPath="Mandal" id="idSelectMandal" placeholder="{i18n>detail.ops.panel.content.table.column.vh.title.mandal}"
+														change="onSelectChange" value="{parts:[{path: 'LocationDetails'},{path: 'LocationDetailsx'}], formatter:'.formatter.formatMandal'}"
+														tokenUpdate="onFieldChange" valueHelpOnly="true" showSuggestion="true" suggestionItemSelected="handleSuggestionItemSelected"
+														showValueHelp="true" valueHelpRequest="handleValueHelp"
+														enabled="{= ${oControlModel>/Mandal/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+														editable="{= ${oControlModel>/Mandal/display} &amp;&amp; (${detailView>/stateId} !== 'D') &amp;&amp; ${location>/vMandal}}"
+														visible="{oControlModel>/Mandal/visible}" suggestionItems="{/ZWRK_C_MANDALS}" valueState="{= ${oControlModel>/Mandal/valueState}}"
+														valueStateText="{= ${oControlModel>/Mandal/valueStateText}}">
+														<customData>
+															<core:CustomData key="key" value="mandal"/>
+															<core:CustomData key="text" value="mandalx"/>
+															<core:CustomData key="SFPersistenceKey" value="Mandal_SF_AS_PersistenceKey"/>
+															<core:CustomData key="reqFields" value="district,mandal"/>
+															<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_C_MANDAL_LIST', entityType: 'ZWRK_C_MANDAL_LISTType'}"/>
+															<core:CustomData key="filterArray" value="{filter:[]}"/>
+															<core:CustomData key="mode" value="MultiSelect"/>
+														</customData>
+														<suggestionItems>
+															<core:Item text="{mandalx}" key="{mandal}"/>
+														</suggestionItems>
+													</MultiInput>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+										<f:FormContainer >
+											<f:FormElement label="" visible="{= ${oControlModel>/District/visible}}">
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.district}" required="{= ${oControlModel>/District/mandatory}}"/>
+												</f:label>
+												<f:fields>
+													<RadioButton app:bindPath="district" groupName="GroupB"
+														enabled="{= ${oControlModel>/District/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" selected="{location>/vDistrict}"
+														select="onRadioSelect">
+														<layoutData>
+															<l:GridData span="XL1 L1 M2 S4"/>
+														</layoutData>
+													</RadioButton>
+													<MultiInput showValueHelp="true" maxSuggestionWidth="40rem" id="idSelectDistrict"
+														placeholder="{i18n>detail.ops.panel.content.table.column.vh.title.district}" change="onSelectChange" app:bindPath="District"
+														valueHelpOnly="true" tokenUpdate="onFieldChange"
+														value="{parts:[{path: 'LocationDetails'},{path: 'LocationDetailsx'}], formatter:'.formatter.formatDistrict'}" showSuggestion="true"
+														suggestionItems="{path: '/ZWRK_C_DISTRICTS'}" suggestionItemSelected="handleSuggestionItemSelected" selectedKey="{district}"
+														enabled="{= ${oControlModel>/District/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+														editable="{= ${oControlModel>/District/display} &amp;&amp; (${detailView>/stateId} !== 'D') &amp;&amp; ${location>/vDistrict}}"
+														visible="{oControlModel>/District/visible}" valueState="{= ${oControlModel>/District/valueState}}"
+														valueStateText="{= ${oControlModel>/District/valueStateText}}" valueHelpRequest="handleValueHelp">
+														<customData>
+															<core:CustomData key="key" value="district"/>
+															<core:CustomData key="text" value="name"/>
+															<core:CustomData key="SFPersistenceKey" value="District_SF_AS_PersistenceKey"/>
+															<core:CustomData key="reqFields" value="district"/>
+															<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_C_DISTRICTS', entityType: 'ZWRK_C_DISTRICTSType'}"/>
+															<core:CustomData key="filterArray" value="{filter:[]}"/>
+															<core:CustomData key="mode" value="MultiSelect"/>
+														</customData>
+														<suggestionItems>
+															<core:ListItem key="{district}" text="{name}"/>
+														</suggestionItems>
+													</MultiInput>
+													<Button icon="sap-icon://display" press="handleLocationListDisplay" type="Transparent" tooltip="{i18n>tooltip.locationDetails}">
+														<layoutData>
+															<l:GridData span="XL1 L1 M2 S4"/>
+														</layoutData>
+													</Button>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+								<f:Form editable="true">
+									<f:layout>
+										<f:ResponsiveGridLayout class="noPadding" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0"
+											emptySpanM="0" emptySpanS="0" columnsXL="3" columnsL="3" columnsM="3"/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer >
+											<f:title>
+												<core:Title text="{i18n>detail.ops.panel.content.label.constituency}"/>
+											</f:title>
+											<f:FormElement label="" visible="{= ${oControlModel>/Loksabha/visible}}">
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.loksabha}" required="{= ${oControlModel>/Loksabha/mandatory}}"/>
+												</f:label>
+												<f:fields>
+													<!-- <RadioButton app:bindPath='loksabha' groupName="GroupC" select="onRadioSelect" enabled="{= ${oControlModel>/Loksabha/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" selected="{location>/vLoksabha}">
+														<layoutData>
+															<l:GridData span="XL1 L1 M2 S4" />
+														</layoutData>
+													</RadioButton> -->
+													<MultiInput app:bindPath="LokSabha" placeholder="{i18n>detail.ops.panel.content.table.column.vh.title.loksabha}" id="idMultiInputLoksabha"
+														change="onSelectChange" valueHelpOnly="true" value="{parts:[{path: 'ConstituencyDetails'}], formatter:'.formatter.formatLoksabha'}"
+														tokenUpdate="onFieldChange" showSuggestion="true" suggestionItemSelected="handleSuggestionItemSelected" showValueHelp="true"
+														valueHelpRequest="handleValueHelp" enabled="{= ${oControlModel>/Loksabha/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+														editable="{= ${oControlModel>/Loksabha/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" visible="{oControlModel>/Loksabha/visible}"
+														suggestionItems="{/ZWRK_C_LOKSABHA}" valueState="{= ${oControlModel>/Loksabha/valueState}}"
+														valueStateText="{= ${oControlModel>/Loksabha/valueStateText}}">
+														<customData>
+															<core:CustomData key="key" value="loksabha"/>
+															<core:CustomData key="text" value="loksabha_name"/>
+															<core:CustomData key="reqFields" value="loksabha"/>
+															<core:CustomData key="SFPersistenceKey" value="Loksabha_SF_AS_PersistenceKey"/>
+															<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_C_LOKSABHA', entityType: 'ZWRK_C_LOKSABHAType'}"/>
+															<core:CustomData key="filterArray" value="{filter:[]}"/>
+															<core:CustomData key="mode" value="MultiSelect"/>
+														</customData>
+														<suggestionItems>
+															<core:Item text="{loksabha_name}" key="{loksabha}"/>
+														</suggestionItems>
+													</MultiInput>
+													<Button icon="sap-icon://display" press="handleConstListDisplay" type="Transparent" tooltip="{i18n>tooltip.locationDetails}"
+														app:bindPath='Loksabha'>
+														<layoutData>
+															<l:GridData span="XL1 L1 M2 S4"/>
+														</layoutData>
+													</Button>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+										<f:FormContainer >
+											<f:title>
+												<core:Title/>
+											</f:title>
+											<f:FormElement visible="{= ${oControlModel>/ConstituencyDetails/visible}}">
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.assembly}" required="{= ${oControlModel>/ConstituencyDetails/mandatory}}"/>
+												</f:label>
+												<f:fields>
+													<!-- <RadioButton app:bindPath="assembly" groupName="GroupC" select="onRadioSelect" enabled="{= ${oControlModel>/ConstituencyDetails/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" selected="{location>/vAssembly}">
+														<layoutData>
+															<l:GridData span="XL1 L1 M2 S4" />
+														</layoutData>
+													</RadioButton> -->
+													<MultiInput app:bindPath="Constituency" id="idMultiInputAssembly"
+														placeholder="{i18n>detail.ops.panel.content.table.column.vh.title.assembly}" change="onSelectChange" valueHelpOnly="true"
+														value="{parts:[{path: 'AssemblyDetails'}], formatter:'.formatter.formatAssembly'}" tokenUpdate="onFieldChange" showSuggestion="true"
+														suggestionItemSelected="handleSuggestionItemSelected" showValueHelp="true" valueHelpRequest="handleValueHelp"
+														enabled="{= ${oControlModel>/ConstituencyDetails/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+														editable="{= ${oControlModel>/ConstituencyDetails/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"
+														visible="{oControlModel>/ConstituencyDetails/visible}" suggestionItems="{/ZWRK_C_CONSTITUENCIES}"
+														valueState="{= ${oControlModel>/ConstituencyDetails/valueState}}" valueStateText="{= ${oControlModel>/ConstituencyDetails/valueStateText}}">
+														<customData>
+															<core:CustomData key="key" value="constutuency"/>
+															<core:CustomData key="text" value="assembly"/>
+															<core:CustomData key="SFPersistenceKey" value="Assembly_SF_AS_PersistenceKey"/>
+															<core:CustomData key="reqFields" value="constutuency,district,Lokcons"/>
+															<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_C_CONSTITUENCIES', entityType: 'ZWRK_C_CONSTITUENCIESType'}"/>
+															<core:CustomData key="filterArray" value="{filter:[]}"/>
+															<core:CustomData key="mode" value="MultiSelect"/>
+														</customData>
+														<suggestionItems>
+															<core:Item text="{assembly}" key="{constutuency}"/>
+														</suggestionItems>
+													</MultiInput>
+													<Button icon="sap-icon://display" press="handleConstListDisplay" type="Transparent" tooltip="{i18n>tooltip.locationDetails}"
+														app:bindPath="Assembly">
+														<layoutData>
+															<l:GridData span="XL1 L1 M2 S4"/>
+														</layoutData>
+													</Button>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+										<f:FormContainer >
+											<f:FormElement >
+												<f:fields></f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+			<!--changes ended by lahari-->
+			<!-- <uxap:ObjectPageSection id="Fund" title="{i18n>detail.ops.panel.title.Fund}" showTitle="false" visible="{= ${detailView>/bUAVisible} ? false : true}">
+				<uxap:ObjectPageSubSection mode="Collapsed">
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ops.panel.content.label.Fund}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<f:Form editable="true">
+									<f:layout>
+										<f:ResponsiveGridLayout
+											labelSpanXL="12"
+											labelSpanL="12"
+											labelSpanM="12"
+											labelSpanS="12"
+											adjustLabelSpan="false"
+											emptySpanXL="0"
+											emptySpanL="0"
+											emptySpanM="0"
+											emptySpanS="0"
+											columnsXL="3"
+											columnsL="3"
+											columnsM="3"
+											singleContainerFullSize="false"
+										/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer>
+											<f:formElements>
+												 <f:FormElement visible="{= ${oControlModel>/FundingAgencyId/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.FundingAgencyId}" required="{= ${oControlModel>/FundingAgencyId/mandatory}}"/>
+													</f:label>
+													<f:fields>
+														<Input showValueHelp="true"
+																id="idFundingAgency"
+																app:bindPath="FundingAgencyId"
+																change="onSelectChange"
+																suggestionItems="{path: '/ZWRK_C_FUNDING_AGENCY', events: {dataReceived: '.onSuggestDataReceived'}}"
+																templateShareable= "false"
+																selectedKey="{FundingAgencyId}"
+																filterSuggests="true"
+																showSuggestion="true"
+																suggest="handleSuggest"
+																enabled="{= ${oControlModel>/FundingAgencyId/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" 
+																valueState="{oControlModel>/FundingAgencyId/valueState}" 
+																valueStateText="{oControlModel>/FundingAgencyId/valueStateText}"
+																valueHelpRequest="handleValueHelp">
+																<customData>
+																	<core:CustomData key="key" value="fundid"/>
+																	<core:CustomData key="text" value="fundagency"/>
+																	<core:CustomData key="reqFields" value="fundid"/>
+																	<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_C_FUNDING_AGENCY', entityType: 'ZWRK_C_FUNDING_AGENCYType'}"/>
+																	<core:CustomData key="filterArray" value="{filter:[]}"/>
+																	<core:CustomData key="mode" value="SingleSelectMaster"/>			
+																</customData>
+																<suggestionItems>
+																	<core:ListItem key="{fundid}" text="{fundagency}"/>
+																</suggestionItems>
+														</Input>
+													</f:fields>
+												</f:FormElement>
+											</f:formElements>
+										</f:FormContainer>
+										<f:FormContainer>
+											<f:formElements>
+												<f:FormElement visible="{= ${oControlModel>/RefNumber/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.label.RefNumber}" required="{= ${oControlModel>/RefNumber/mandatory}}"/>	
+													</f:label>
+													<f:fields>
+														<Input change="onFieldChange"
+															liveChange="onFieldLiveChange"
+															value="{RefNumber}"
+															editable="{= ${oControlModel>/RefNumber/display} &amp;&amp; (${detailView>/stateId} !== 'D')}" 
+															valueState="{= ${oControlModel>/RefNumber/valueState}}" 
+															valueStateText="{= ${oControlModel>/RefNumber/valueStateText}}" 
+															maxLength="{oControlModel>/RefNumber/maxLength}" 
+															type="{oControlModel>/RefNumber/type}"
+															tooltip="{RefNumber}"
+														/>
+													</f:fields>
+												</f:FormElement>
+											</f:formElements>
+										</f:FormContainer>
+										<f:FormContainer>
+											<f:formElements>
+												<f:FormElement visible="{= ${oControlModel>/FundRefDate/visible}}">
+													<f:label>
+														<Label text="{i18n>detail.ops.panel.content.sf.label.FundRefDate}" required="{= ${oControlModel>/FundRefDate/mandatory}}"/>
+													</f:label>
+													<f:fields>
+														<DatePicker change="onFieldChange" value = "{path:'FundRefDate', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, UTC: true}}"  editable="{= ${oControlModel>/FundRefDate/display} &amp;&amp; (${detailView>/stateId} !== 'D')}"/>
+													</f:fields>
+												</f:FormElement>
+											</f:formElements>
+										</f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection> -->
+			<uxap:ObjectPageSection id="ChecklistandAttach" title="{i18n>detail.ObjPageSection.title.ChecklistandAttach}" importance="High"
+				showTitle="false">
+				<uxap:ObjectPageSubSection>
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true" width="auto">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ops.panel.header.title.ChecklistandAttach}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<Table id="idChecklistTable" inset="false" items="{path: '/WrkChecklistSet'}" growing="true" growingThreshold="999">
+									<columns>
+										<Column width="3rem" visible="false">
+											<Text text="{i18n>detail.ops.panel.content.table.column.slNo}"/>
+										</Column>
+										<Column width="5rem">
+											<Text text="{i18n>detail.ops.panel.content.table.column.ruleNo}"/>
+										</Column>
+										<Column width="20rem">
+											<Text text="{i18n>detail.ops.panel.content.table.column.ruleDesc}"/>
+										</Column>
+										<Column width="4rem">
+											<Text text="{i18n>detail.ops.panel.content.table.column.action}"/>
+										</Column>
+										<Column width="2rem">
+											<Text text="{i18n>detail.ops.panel.content.table.column.NA}"/>
+										</Column>
+										<Column width="2rem">
+											<Text text="{i18n>detail.ops.panel.content.table.column.files}"/>
+										</Column>
+									</columns>
+									<items>
+										<ColumnListItem>
+											<cells>
+												<Text text="{path:'ChkId', formatter:'.formatter.getSerialNo'}" visible="false"/>
+												<Label text="{ChkId}" tooltip="{ChkId}" required="{= ${Udf3} === '3' ? true : false}"/>
+												<Text text="{ChkDescription}" tooltip="{ChkDescription}"/>
+												<Switch app:bindPath="SwitchApplicable" tooltip="{i18n>tooltip.checkSwitch}" type="AcceptReject"
+													state="{= ${Applicable} === '02' ? true : false}" change="onApplicableChange"
+													enabled="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)}"/>
+												<CheckBox app:bindPath="CheckApplicable" tooltip="{i18n>tooltip.NA}" selected="{= ${Applicable} === '03' ? true : false}"
+													select="onApplicableChange"
+													editable="{= (${detailView>/stateId} !== 'D') &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false) &amp;&amp; (${Udf3} === '1' ? true : false)}"/>
+												<Button tooltip="{i18n>tooltip.uploadButton}" icon="sap-icon://attachment" press="onChecklistButtonPress"
+													text="{= ${Udf1} > 0 ? ${Udf1} : '' }"/>
+											</cells>
+										</ColumnListItem>
+									</items>
+								</Table>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+			<uxap:ObjectPageSection id="idOtherAttach" title="{i18n>detail.ObjPageSection.title.otherAttach}" importance="High" showTitle="false">
+				<uxap:ObjectPageSubSection>
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true" width="auto">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ops.panel.header.title.otherAttachment}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<VBox class="sapUiTinyMargin" renderType="Bare">
+									<Label text="{i18n>detail.ops.panel.content.textArea.Reason}"/>
+									<TextArea id="idTextAreaReason" placeholder="{i18n>detail.ops.panel.content.textArea.PReason}" cols="60" height="2.4rem" maxLength="60"/>
+								</VBox>
+								<UploadCollection id="idUploadCollection" multiple="true" change="onChange" sameFilenameAllowed="true" fileDeleted="onFileDeleted"
+									uploadButtonInvisible="{=(${detailView>/stateId} !== 'D')? false : true}" filenameLengthExceed="onFilenameLengthExceed"
+									fileRenamed="onFileRenamed" fileSizeExceed="onFileSizeExceed" selectionChange="onSelectionChange" typeMissmatch="onTypeMissmatch"
+									instantUpload="true" uploadComplete="onUploadComplete" beforeUploadStarts="onBeforeUploadStarts" uploadTerminated="onUploadTerminated"
+									fileType="jpg,jpeg,png,bmp,pdf" items="{ path: 'WrkAttachments', templateShareable: false }"
+									uploadUrl="/sap/opu/odata/sap/ZGW_WRK_ADM_SANC_SRV/WrkAttachmentsSet">
+									<toolbar>
+										<OverflowToolbar id="myId">
+											<Title id="attachmentTitle"/>
+											<ToolbarSpacer/>
+											<!-- <SearchField width="10rem" search="onSearch" /> -->
+											<Button id="deleteSelectedButton" text="Delete" press="onDeleteSelectedItems" enabled="false" visible="false" type="Transparent"/>
+											<ToggleButton id="selectAllButton" text="Select all" press="onSelectAllPress" enabled="false" visible="false" type="Transparent"/>
+											<UploadCollectionToolbarPlaceholder/>
+										</OverflowToolbar>
+									</toolbar>
+									<items>
+										<UploadCollectionItem documentId="{DmsGuid}" visibleDelete="false" visibleEdit="false" fileName="{Filename}" press="onAttachPdfVewer">
+											<customData>
+												<core:CustomData key="URL"
+													value="/sap/opu/odata/sap/ZGW_WRK_ADM_SANC_SRV/WrkAttachmentsSet(DmsGuid=guid'{DmsGuid}',DocGuid=guid'{DocGuid}',DocType='ZWAS')/$value"/>
+											</customData>
+											<attributes>
+												<ObjectAttribute title="{i18n>detail.attachment.UploadedBy}" text="{UploadedBy}" active="false"/>
+												<ObjectAttribute title="{i18n>detail.attachment.UpoadedOn}" text="{path: 'UploadedDatetime', type: 'sap.ui.model.type.DateTime'}"
+													active="false"/>
+												<ObjectAttribute title="{i18n>detail.attachment.DocumentType}" text="{MimeType}" active="false"/>
+											</attributes>
+											<statuses>
+												<ObjectStatus title="{i18n>detail.ops.panel.content.textArea.Reason}" text="{Reason}"/>
+											</statuses>
+										</UploadCollectionItem>
+									</items>
+								</UploadCollection>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+			<uxap:ObjectPageSection id="idDocFlowLogs" title="{i18n>detail.ObjPageSection.title.DocFlowLogs}" importance="High" showTitle="false">
+				<uxap:subSections>
+					<uxap:ObjectPageSubSection>
+						<uxap:blocks>
+							<Panel expandable="true" expanded="true">
+								<headerToolbar>
+									<Toolbar>
+										<Title text="{i18n>detail.ObjPageSection.title.DocFlowLogs}"/>
+									</Toolbar>
+								</headerToolbar>
+								<content>
+									<table:TreeTable id="docTreeTable" width="100%"
+										rows="{path:'WrkDocumentFlow', parameters : { countMode: 'Inline', operationMode: 'Server', numberOfExpandedLevels: 4 }, filters: [{ path: 'AppName', operator: 'EQ', value1: 'AS' }]}"
+										selectionMode="Single" enableSelectAll="true" enableColumnReordering="true" toggleOpenState="onSetrowCount" visibleRowCount="15"
+										expandFirstLevel="true" rowSelectionChange="onSelectionrow">
+										<table:columns>
+											<table:Column width="20rem">
+												<Label text="{i18n>detail.ops.panel.content.table.column.label.DocType}"/>
+												<table:template>
+													<Label text="{AppName}" design="{= ${CurrentNode} === 'X' ? 'Bold' : 'Standard'}"/>
+												</table:template>
+											</table:Column>
+											<table:Column width="20rem">
+												<Label text="{i18n>detail.ops.panel.content.table.column.label.document}"/>
+												<table:template>
+													<Link text="{Description}" app:display="X" emphasized="{= ${CurrentNode} === 'X' ? true : false}" press="onWrkDocFlowAs"/>
+												</table:template>
+											</table:Column>
+											<table:Column width="20rem">
+												<Label text="{i18n>detail.ops.panel.content.table.column.label.value}"/>
+												<table:template>
+													<Label text="{path:'Value', formatter:'.formatter.formatAmount'}" design="{= ${CurrentNode} === 'X' ? 'Bold' : 'Standard'}"/>
+												</table:template>
+											</table:Column>
+											<table:Column width="5rem">
+												<Label text="{i18n>detail.ops.panel.content.table.column.label.version}"/>
+												<table:template>
+													<Label text="{Version}"/>
+												</table:template>
+											</table:Column>
+										</table:columns>
+									</table:TreeTable>
+								</content>
+							</Panel>
+						</uxap:blocks>
+					</uxap:ObjectPageSubSection>
+				</uxap:subSections>
+			</uxap:ObjectPageSection>
+			<uxap:ObjectPageSection id="idWorkFlowLogs" title="{i18n>detail.ObjPageSection.title.WorkFlowLogs}" importance="High" showTitle="false">
+				<uxap:subSections>
+					<uxap:ObjectPageSubSection>
+						<uxap:blocks>
+							<Panel expandable="true" expanded="true">
+								<headerToolbar>
+									<Toolbar>
+										<Title text="Workflow Log"/>
+									</Toolbar>
+								</headerToolbar>
+								<content>
+									<Table id="idWorkflowLogTable" items="{detailView>/Worklog}" growing="true" growingThreshold="999">
+										<columns>
+											<Column width="1.3rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.level}"/>
+											</Column>
+											<Column width="7rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.office}"/>
+											</Column>
+											<Column width="3.3rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.designation}"/>
+											</Column>
+											<Column width="3.5rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.userId}"/>
+											</Column>
+											<Column width="3.5rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.posId}"/>
+											</Column>
+											<Column width="4rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.name}"/>
+											</Column>
+											<Column width="2rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.role}"/>
+											</Column>
+											<Column width="4rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.action}"/>
+											</Column>
+											<Column width="5rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.start}"/>
+											</Column>
+											<Column width="5rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.end}"/>
+											</Column>
+											<Column width="4rem" hAlign="Center">
+												<Text text="{i18n>detail.ops.panel.table.workflow.status}"/>
+											</Column>
+										</columns>
+										<items>
+											<ColumnListItem>
+												<cells>
+													<Text text="{detailView>WfLevel}"/>
+													<Text text="{detailView>Office}"/>
+													<Text text="{detailView>Designation}"/>
+													<Text text="{detailView>Pernr}"/>
+													<Text text="{detailView>Agentid}"/>
+													<Text text="{detailView>PernrName}"/>
+													<Text text="{detailView>Wfrole}"/>
+													<Text text="{detailView>Status}"/>
+													<Text text="{path:'detailView>CreatedDate', type: 'sap.ui.model.odata.type.DateTime'}"/>
+													<Text text="{path:'detailView>CompletedDate', type: 'sap.ui.model.odata.type.DateTime'}"/>
+													<Text text="{detailView>WfStatus}"/>
+												</cells>
+											</ColumnListItem>
+										</items>
+									</Table>
+								</content>
+							</Panel>
+						</uxap:blocks>
+					</uxap:ObjectPageSubSection>
+				</uxap:subSections>
+			</uxap:ObjectPageSection>
+			<uxap:ObjectPageSection id="idNotes" title="{i18n>detail.ObjPageSection.title.Notes}" importance="High" showTitle="false">
+				<uxap:ObjectPageSubSection>
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true" width="auto">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ObjPageSection.title.Notes}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<l:VerticalLayout id="idVerticalLayout" class="sapUiContentPadding" width="100%">
+									<rte:RichTextEditor id="idRichTextEditor" value="{detailView>/Notingstring}" width="100%" editable="{= (${detailView>/stateId} !== 'D')}"
+										height="15rem" customToolbar="false" showGroupFont="true" showGroupLink="true" showGroupInsert="true"></rte:RichTextEditor>
+									<f:SimpleForm minWidth="1024" visible="{=${detailView>/stateId} !== 'D'}" maxContainerCols="2" editable="true" layout="ResponsiveGridLayout"
+										labelSpanL="4" labelSpanM="4" emptySpanL="0" emptySpanM="0" columnsL="2" columnsM="2">
+										<f:content>
+											<Toolbar>
+												<ToolbarSpacer/>
+												<Button icon="sap-icon://post" text="{i18n&gt;POST}" tooltip="{i18n&gt;POST}" press="_handleSaveNotes">
+													<layoutData>
+														<ToolbarLayoutData shrinkable="true"/>
+													</layoutData>
+												</Button>
+												<Button icon="sap-icon://sys-cancel" press="_handleClearNote" text="{i18n&gt;CLEAR}" tooltip="{i18n&gt;CLEAR}">
+													<layoutData>
+														<ToolbarLayoutData shrinkable="true"/>
+													</layoutData>
+												</Button>
+											</Toolbar>
+										</f:content>
+									</f:SimpleForm>
+									<!-- <Button icon="sap-icon://post" text="{i18n>detail.footer.button.post}" press="onPostPress" enabled="{detailView>/bEditable}"/> -->
+									<List items="{detailView>/UserNotes}">
+										<FeedListItem sender="{detailView>Name}" senderPress="onPress" iconPress="onPress"
+											icon="{path: 'detailView>ImageUiFlg',formatter: '.formatter.digitialFilePath'}" iconDensityAware="false" info="{i18n>detail.note.info.date}"
+											timestamp="{detailView>Createdate}" text="{detailView>Notingstring}" actions="{path: 'detailView>Actions/', templateShareable: false}">
+											<FeedListItemAction text="{detailView>Text}" icon="{detailView>Icon}" key="{detailView>Key}" press="onNoteActionPress"/>
+										</FeedListItem>
+									</List>
+								</l:VerticalLayout>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+			<uxap:ObjectPageSection id="idTechnicalData" title="{i18n>detail.ObjPageSection.title.TechnicalData}" importance="High" showTitle="false">
+				<uxap:ObjectPageSubSection>
+					<uxap:blocks>
+						<Panel expandable="true" expanded="true" width="auto">
+							<headerToolbar>
+								<Toolbar>
+									<Title text="{i18n>detail.ops.panel.title.TechnicalData}"/>
+								</Toolbar>
+							</headerToolbar>
+							<content>
+								<f:Form editable="true">
+									<f:layout>
+										<f:ResponsiveGridLayout labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="0" emptySpanL="0" emptySpanM="0"
+											emptySpanS="0" columnsXL="3" columnsL="3" columnsM="3"/>
+									</f:layout>
+									<f:formContainers>
+										<f:FormContainer>
+											<f:FormElement>
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.createdBy}"/>
+												</f:label>
+												<f:fields>
+													<Input value="{UserIdCrName}" editable="false"/>
+												</f:fields>
+											</f:FormElement>
+											<f:FormElement>
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.changedOn}"/>
+												</f:label>
+												<f:fields>
+													<Input value="{path:'DatetimeCh',type: 'sap.ui.model.odata.type.DateTime'}" editable="false"/>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+										<f:FormContainer>
+											<f:FormElement>
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.createdOn}"/>
+												</f:label>
+												<f:fields>
+													<Input value="{path:'DatetimeCr',type: 'sap.ui.model.odata.type.DateTime'}" editable="false"/>
+												</f:fields>
+											</f:FormElement>
+											<f:FormElement>
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.Position}"/>
+												</f:label>
+												<f:fields>
+													<Select app:bindPath="Position" id="idPosition" selectedKey="{Udf1}" enabled="false">
+														<!-- <items>
+															<core:Item text="{STEXT}" key="{position}"/>
+														</items> -->
+													</Select>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+										<f:FormContainer>
+											<f:FormElement>
+												<f:label>
+													<Label text="{i18n>detail.ops.panel.content.label.changedBy}"/>
+												</f:label>
+												<f:fields>
+													<Input value="{UserIdCh}" editable="false"/>
+												</f:fields>
+											</f:FormElement>
+										</f:FormContainer>
+									</f:formContainers>
+								</f:Form>
+							</content>
+						</Panel>
+					</uxap:blocks>
+				</uxap:ObjectPageSubSection>
+			</uxap:ObjectPageSection>
+		</uxap:sections>
+		<uxap:footer>
+			<Toolbar>
+				<Button id="idMessagePopover" icon="sap-icon://message-popup" text="" type="Emphasized" press="handleMessagePopoverPress"/>
+				<Input id="idBudgetCtrl" value="{BudgetCtrl}" visible="false" editable="false" change="onFieldChange"/>
+				<ToolbarSpacer/>
+				<Button type="Emphasized" text="{i18n>detail.footer.buttons.save}" press="onSavePress"
+					visible="{= (${detailView>/stateId} !== 'D' &amp;&amp; ${detailView>/SubmitBtnVisibility} === 'X')? true : false}"/>
+				<Button type="Emphasized" text="{i18n>detail.footer.buttons.submit}" press="onSubmitPress"
+					visible="{= (${detailView>/stateId} !== 'D' &amp;&amp; ${detailView>/SubmitBtnVisibility} === 'X')? true : false}"/>
+				<Button type="Emphasized" text="{i18n>detail.footer.buttons.nextLevel}" press="onNextLevelPress"
+					visible="{= (${detailView>/stateId} !== 'D' &amp;&amp; ${detailView>/NextBtnVisibility} === 'X')? true : false}"/>
+				<Button type="Emphasized" text="{i18n>detail.footer.buttons.approve}" press="onApprovePress"
+					visible="{= (${detailView>/stateId} !== 'D' &amp;&amp; ${detailView>/ApproveBtnVisibility} === 'X')? true : false}"/>
+				<Button type="Default" text="{i18n>detail.footer.buttons.return}" press="onReturnPress"
+					visible="{= (${detailView>/stateId} !== 'D' &amp;&amp; ${detailView>/ReturnBtnVisibility} === 'X')? true : false}"/>
+				<Button type="Default" text="{i18n>detail.footer.buttons.onHold}" press="onWithheldPress"
+					visible="{= (${detailView>/stateId} !== 'D' &amp;&amp; ${detailView>/OnholdBtnVisibility} === 'X')? true : false}"/>
+				<Button type="Default" text="{i18n>detail.footer.buttons.cancel}" press="onCancelPress"
+					visible="{= (${detailView>/stateId} !== 'D' &amp;&amp; ${detailView>/SubmitBtnVisibility} === 'X')? true : false}"/>
+			</Toolbar>
+		</uxap:footer>
+	</uxap:ObjectPageLayout>
+</mvc:View>

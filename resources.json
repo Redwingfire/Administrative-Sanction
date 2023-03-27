@@ -1,0 +1,172 @@
+{
+    "resources": [
+        {
+            "name": "Component-dbg.js"
+        },
+        {
+            "name": "annotations/annotation1.xml"
+        },
+        {
+            "name": "neo-app.json"
+        },
+        {
+            "name": "index.html"
+        },
+        {
+            "name": ".user.project.json"
+        },
+        {
+            "name": "Image/check.png"
+        },
+        {
+            "name": "Image/info.png"
+        },
+        {
+            "name": "model/formatter-dbg.js"
+        },
+        {
+            "name": "model/AppModel-dbg.js"
+        },
+        {
+            "name": "model/AppModel.js"
+        },
+        {
+            "name": "model/formatter.js"
+        },
+        {
+            "name": "controller/Master-dbg.controller.js"
+        },
+        {
+            "name": "controller/Detail.controller.js"
+        },
+        {
+            "name": "controller/App.controller.js"
+        },
+        {
+            "name": "controller/App-dbg.controller.js"
+        },
+        {
+            "name": "controller/Master.controller.js"
+        },
+        {
+            "name": "controller/NotFound-dbg.controller.js"
+        },
+        {
+            "name": "controller/Detail-dbg.controller.js"
+        },
+        {
+            "name": "controller/NotFound.controller.js"
+        },
+        {
+            "name": "Component.js"
+        },
+        {
+            "name": "Digital_Sign/ds2min.js"
+        },
+        {
+            "name": "Digital_Sign/ds2min-dbg.js"
+        },
+        {
+            "name": "css/style-dbg.css"
+        },
+        {
+            "name": "css/style.css"
+        },
+        {
+            "name": "resources.json",
+            "merged": true
+        },
+        {
+            "name": "manifest-bundle.zip"
+        },
+        {
+            "name": ".project.json"
+        },
+        {
+            "name": "manifest.json"
+        },
+        {
+            "name": "view/Master.view.xml"
+        },
+        {
+            "name": "view/Detail.view.xml"
+        },
+        {
+            "name": "view/App.view.xml"
+        },
+        {
+            "name": "view/NotFound.view.xml"
+        },
+        {
+            "name": "i18n/i18n.properties",
+            "raw": "i18n/i18n.properties"
+        },
+        {
+            "name": "Component-preload.js",
+            "merged": true
+        },
+        {
+            "name": "fragment/additionalNote.fragment.xml"
+        },
+        {
+            "name": "fragment/ddoVH.fragment.xml"
+        },
+        {
+            "name": "fragment/sort.fragment.xml"
+        },
+        {
+            "name": "fragment/createAS.fragment.xml"
+        },
+        {
+            "name": "fragment/createScheme.fragment.xml"
+        },
+        {
+            "name": "fragment/POUpload.fragment.xml"
+        },
+        {
+            "name": "fragment/ValueHelpDialog.fragment.xml"
+        },
+        {
+            "name": "fragment/nonDcwHoaTable.fragment.xml"
+        },
+        {
+            "name": "fragment/checkListAttachment.fragment.xml"
+        },
+        {
+            "name": "fragment/hoaVH.fragment.xml"
+        },
+        {
+            "name": "fragment/additionalNoteReference.fragment.xml"
+        },
+        {
+            "name": "fragment/EditMigratedASDialog.fragment.xml"
+        },
+        {
+            "name": "fragment/picCodeVH.fragment.xml"
+        },
+        {
+            "name": "fragment/sacauthority.fragment.xml"
+        },
+        {
+            "name": "fragment/changeLog.fragment.xml"
+        },
+        {
+            "name": "fragment/createMigratedASDialog.fragment.xml"
+        },
+        {
+            "name": "fragment/massProcessNote.fragment.xml"
+        },
+        {
+            "name": "fragment/Message.fragment.xml"
+        },
+        {
+            "name": "fragment/positionVH.fragment.xml"
+        },
+        {
+            "name": "util/Constants.js"
+        },
+        {
+            "name": "util/Constants-dbg.js"
+        }
+    ]
+}

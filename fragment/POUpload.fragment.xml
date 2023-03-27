@@ -1,0 +1,58 @@
+<!-- 
+
+ Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+ -->
+<core:FragmentDefinition height="50%" xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:u="sap.ui.unified">
+	<Dialog title="{i18n>frag.poupload.title}" contentHeight="100%" contentWidth="100%" afterClose="onAfterClosePODialog">
+		<content>
+			<Panel>
+				<HBox width="100%">
+					<HBox width="80%">
+						<u:FileUploader id="fileUpload" fileType="csv" typeMissmatch="onTypeMissmatch" fileSizeExceed="onFileSizeExceed" change="onFileUploaderChange"
+						uploadComplete="onUploadComplete" uploadUrl="/sap/opu/odata/sap/ZGW_WRK_ADM_SANC_SRV/WrkAppTypeSet" placeholder="No file chosen"/>
+						<Button icon="sap-icon://upload" press="onPOUpload"/>
+					</HBox>
+					<HBox width="20%">
+						<Link text="{i18n>frag.poupload.link.title}" href="/sap/opu/odata/sap/ZGW_WRK_ADM_SANC_SRV/WrkAgrAttachmentSet('test')/$value"/>
+					</HBox>
+				</HBox>
+			</Panel>
+			<Table items="{uploadedItem>/}"  growing="true" growingScrollToLoad="true">
+				<headerToolbar>
+					<Toolbar>
+						<Title text="PO Details" level="H2"/>
+					</Toolbar>
+				</headerToolbar>
+				<columns>
+					<Column hAlign="Center" width="5rem">
+						<Text text="Record"/>
+					</Column>
+					<Column hAlign="Center" width="7rem">
+						<Text text="Message Type"/>
+					</Column>
+					<Column hAlign="Center">
+						<Text text="Message"/>
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<Text text="{uploadedItem>RecordNo}"/>
+						</cells>
+						<cells>
+							<Text text="{uploadedItem>Type}"/>
+						</cells>
+						<cells>
+							<Text text="{uploadedItem>Message}"/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+		<buttons>
+			<Button text="{i18n>frag.poupload.ok}" press="onOKPOUploadDialog"></Button>
+			<!--<Button text="{i18n>frag.poupload.cancel}" press="onClosePOUploadDialog"></Button>-->
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

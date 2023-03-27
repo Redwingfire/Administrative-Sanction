@@ -1,0 +1,82 @@
+<mvc:View controllerName="com.goap.cfms.works.as.controller.Master" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartList="sap.ui.comp.smartlist" xmlns:semantic="sap.f.semantic"
+	class="sapUiSizeCompact">
+	<semantic:SemanticPage id="masterPage" preserveHeaderStateOnScroll="true" toggleHeaderOnTitleClick="false" showFooter="true"
+		headerPinnable="false">
+		<semantic:titleHeading>
+			<Title id="masterPageTitle" text="{i18n>master.count.title}" class="sapUiSmallMarginTop" level="H1"/>
+		</semantic:titleHeading>
+		<semantic:titleExpandedContent>
+			<Text text="{appView>/positionText}" tooltip="{appView>/position} : {appView>/positionText}"/>
+		</semantic:titleExpandedContent>
+		<semantic:headerContent>
+			<HBox>
+				<smartFilterBar:SmartFilterBar id="smartFilterBar" class="customFilterBasicSearch" useToolbar="true" showFilterConfiguration="false"
+					enableBasicSearch="true" entitySet="ZWRK_C_ASHDR_DETAILS_C" liveMode="true" filterBarExpanded="false" useDateRangeType="true"
+					considerSelectionVariants="false"></smartFilterBar:SmartFilterBar>
+				<Button id="idMicBtn" icon="sap-icon://microphone" enabled="{=${appView>/bEnabledMasterViewCtr}}"
+					tooltip="{i18n>master.Header.link.searchbyVoice}" type="Transparent"/>
+				<Button icon="sap-icon://add" enabled="{=${appView>/bEnabledMasterViewCtr}}" visible="{= ${appView>/role} === 'M'? true : false}"
+					tooltip="{i18n>master.Header.link.text}" press="onCreateNewAS"/>
+				<Button id="idMultiSelectBtn" icon="sap-icon://activate" enabled="{masterView>/bMultiSelectEnabled}"
+					tooltip="{i18n>master.header.link.multiProcess}" press="onMultiProcessBtnPress"/>
+			</HBox>
+		</semantic:headerContent>
+		<semantic:content>
+			<VBox>
+				<smartList:SmartList id="ItemsST" entitySet="ZWRK_C_ASHDR_DETAILS_C" smartFilter="smartFilterBar" showRowCount="true"
+					showFullScreenButton="false" enableAutoBinding="true" beforeRebindList="beforeRebindList"
+					selectFields="guid,short_desc,code,estimate_val,currency,changetat,Description,IsActive,version,udf1" dataReceived="onDataReceived">
+					<smartList:listItemTemplate >
+						<ObjectListItem title="{short_desc}" press="onSelectionChange"
+							number="{ parts:[{path:'estimate_val'},{path:'currency'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure: false}, formatter: '.formatter.formatAmount' }"
+							numberUnit="{currency}">
+							<firstStatus>
+								<ObjectStatus text="{= ${IsActive} === 'X'? ${i18n>master.Header.status.text.Complete} : ${i18n>master.Header.status.text.Incomplete} }"
+									state="{= ${IsActive} === 'X'? 'Success' : 'Error' }" visible="{= ${masterView>/highStatus} === 'D'? true : false}"/>
+							</firstStatus>
+							<attributes>
+								<ObjectAttribute text="{path: 'code',formatter: '.formatter._removeZeroes'}"/>
+								<ObjectAttribute text="{path:'changetat',type: 'sap.ui.model.odata.type.DateTime'}"/>
+								<ObjectAttribute text="{path: 'version', formatter: '.formatter._addVersion'}"/>
+							</attributes>
+						</ObjectListItem>
+					</smartList:listItemTemplate>
+					<!-- Main content of the SmartList/VBox -->
+					<OverflowToolbar id="idStatusTab" design="Transparent">
+						<Button id="idAll" icon="sap-icon://multiselect-all" text="({masterView>/aCount})" tooltip="{i18n>master.status.all}"
+							type="{= ${masterView>/highStatus} === 'X' ? 'Emphasized' : 'Transparent' }" enabled="{appView>/bEnabledMasterViewCtr}" press="onAllPress"/>
+						<Button id="idDraft" icon="sap-icon://notes" text="({masterView>/dCount})" tooltip="{i18n>master.status.draft}"
+							type="{= ${masterView>/highStatus} === 'D' ? 'Emphasized' : 'Transparent' }" enabled="{appView>/bEnabledMasterViewCtr}" press="onDraftPress"/>
+						<Button id="idInProcess" icon="sap-icon://process" text="({masterView>/inPCount})" tooltip="{i18n>master.status.inp}"
+							type="{= ${masterView>/highStatus} === 'I'? 'Emphasized' : 'Transparent'}" enabled="{appView>/bEnabledMasterViewCtr}"
+							press="onInprocessPress"/>
+						<Button id="idReturn" icon="sap-icon://undo" text="({masterView>/returnCount})" tooltip="{i18n>master.status.return}"
+							type="{= ${masterView>/highStatus} === 'R'? 'Emphasized' : 'Transparent'}" enabled="{appView>/bEnabledMasterViewCtr}" press="onReturnPress"/>
+						<Button id="idApprove" icon="sap-icon://accept" text="({masterView>/apprCount})" tooltip="{i18n>master.status.appr}"
+							type="{= ${masterView>/highStatus} === 'A'? 'Emphasized' : 'Transparent'}" enabled="{appView>/bEnabledMasterViewCtr}"
+							press="onApprovedPress"/>
+						<Button id="idHold" icon="sap-icon://lateness" text="({masterView>/holdCount})" tooltip="{i18n>master.status.hold}"
+							type="{= ${masterView>/highStatus} === 'H'? 'Emphasized' : 'Transparent'}" enabled="{appView>/bEnabledMasterViewCtr}" press="onHoldPress"/>
+					</OverflowToolbar>
+					<List mode="{appView>/sMasterListMode}" rememberSelections="true" includeItemInSelection="true" selectionChange="onSelectionChange"
+						growing="true" growingThreshold="100"></List>
+				</smartList:SmartList>
+				<!-- <OverflowToolbar>
+					<Button icon="sap-icon://refresh" enabled="{appView>/bEnabledMasterViewCtr}" press="onMasterListRefresh"/>
+					<Button icon="sap-icon://sort" enabled="{appView>/bEnabledMasterViewCtr}" press="onSortPress"/>
+				</OverflowToolbar> -->
+			</VBox>
+		</semantic:content>
+		<semantic:footerCustomActions>
+			<Button text="{i18n>master.footer.button.changePosition}" visible="{= (${masterView>/bMultiSelectVisible} ? false : true)}"
+				press="onChangePosition" enabled="{=${appView>/bEnabledMasterViewCtr}}"/>
+			<Button icon="sap-icon://refresh" visible="{= (${masterView>/bMultiSelectVisible} ? false : true)}"
+				enabled="{appView>/bEnabledMasterViewCtr}" press="onMasterListRefresh"/>
+			<Button icon="sap-icon://sort" visible="{= (${masterView>/bMultiSelectVisible} ? false : true)}" enabled="{appView>/bEnabledMasterViewCtr}"
+				press="onSortPress"/>
+			<Button icon="sap-icon://process" text="{i18n>master.footer.button.process}" type="Emphasized" visible="{masterView>/bMultiSelectVisible}"
+				enabled="{masterView>/bMultiSelectEnabled}" press="onProcessPress" tooltip="{i18n>master.footer.button.process}"/>
+		</semantic:footerCustomActions>
+	</semantic:SemanticPage>
+</mvc:View>

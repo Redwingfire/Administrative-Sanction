@@ -1,0 +1,74 @@
+{
+  "routes": [
+    {
+      "path": "/resources",
+      "target": {
+        "type": "service",
+        "name": "sapui5",
+        "entryPath": "/resources",
+        "version": "1.71.16"
+      },
+      "description": "SAPUI5 Resources"
+    },
+    {
+      "path": "/test-resources",
+      "target": {
+        "type": "service",
+        "name": "sapui5",
+        "entryPath": "/test-resources",
+        "version": "1.71.16"
+      },
+      "description": "SAPUI5 Test Resources"
+    },
+    {
+      "path": "/resources",
+      "target": {
+        "type": "service",
+        "name": "sapui5",
+        "entryPath": "/resources",
+        "version": "1.71.16"
+      },
+      "description": "SAPUI5 Resources"
+    },
+    {
+      "path": "/test-resources",
+      "target": {
+        "type": "service",
+        "name": "sapui5",
+        "entryPath": "/test-resources",
+        "version": "1.71.16"
+      },
+      "description": "SAPUI5 Test Resources"
+    },
+    {
+      "path": "/sap/opu/odata",
+      "target": {
+        "type": "destination",
+        "name": "APCFS_New",
+        "entryPath": "/sap/opu/odata"
+      },
+      "description": "DFI"
+    },
+    {
+      "path": "/sap/bc/ui5_ui5",
+      "target": {
+        "type": "destination",
+        "name": "APCFS_New",
+        "entryPath": "/sap/bc/ui5_ui5"
+      },
+      "description": "DFI"
+    },
+    {
+      "path": "/resources/com/goap/cfms/works/reuselib",
+      "target": {
+        "type": "destination",
+        "name": "APCFS_New",
+        "entryPath": "/sap/bc/ui5_ui5/sap/zreuselib",
+        "preferLocal": true
+      },
+      "description": "com/goap/cfms/works/reuselib Reuse Library"
+    }
+  ],
+  "welcomeFile": "/test/flpSandbox.html",
+  "sendWelcomeFileRedirect": true
+}

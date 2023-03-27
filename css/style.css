@@ -1,0 +1,17 @@
+.noPadding, .sapUxAPBlockContainerDesktop .sapUiFormResGrid>div{
+    padding: 0.25rem 0 !important;
+}
+.noPadding, .sapUxAPBlockContainerTablet .sapUiFormResGrid>div{
+    padding: 0.25rem 0 !important;
+}
+.processFlowTable>div{
+    width: 100rem 0 !important;
+}
+
+.sapUxAPObjectPageHeaderContentHidden {
+  display: block !important;
+} 
+
+.SanctionAuthorityDialog {
+    width: 40rem;
+}

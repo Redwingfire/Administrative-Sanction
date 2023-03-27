@@ -1,0 +1,226 @@
+{
+    "_version": "1.9.0",
+    "sap.app": {
+        "_version": "1.2.0",
+        "id": "com.goap.cfms.works.as",
+        "resources": "resources.json",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "dataSources": {
+            "mainService": {
+                "uri": "/sap/opu/odata/sap/ZGW_WRK_ADM_SANC_SRV/",
+                "type": "OData",
+                "settings": {
+                    "odataVersion": "2.0",
+                    "localUri": "localService/metadata.xml",
+                    "annotations": [
+                        "ZGW_WRK_ADM_SANC_ANNO_MDL"
+                    ]
+                }
+            },
+            "ZGW_WRK_ADM_SANC_ANNO_MDL": {
+                "type": "ODataAnnotation",
+                "uri": "/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Annotations(TechnicalName='ZGW_WRK_ADM_SANC_ANNO_MDL',Version='0001')/$value/"
+            },
+            "fieldControlService": {
+                "uri": "/sap/opu/odata/sap/ZGW_WRK_COMMON_UTILS_SRV/",
+                "type": "OData",
+                "settings": {
+                    "odataVersion": "2.0"
+                }
+            },
+            "printService": {
+                "uri": "/sap/opu/odata/sap/ZGW_WRK_FORM_OUTPUT_SRV",
+                "type": "OData",
+                "settings": {
+                    "odataVersion": "2.0"
+                }
+            }
+        },
+        "sourceTemplate": {
+            "id": "sap.ui.ui5-template-plugin.1worklist",
+            "version": "1.52.4"
+        }
+    },
+    "sap.ui": {
+        "_version": "1.2.0",
+        "technology": "UI5",
+        "fullWidth": true,
+        "icons": {
+            "icon": "sap-icon://task",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        },
+        "supportedThemes": [
+            "sap_hcb",
+            "sap_belize"
+        ]
+    },
+    "sap.ui5": {
+        "handleValidation": true,
+        "_version": "1.2.0",
+        "extends": {},
+        "rootView": {
+            "viewName": "com.goap.cfms.works.as.view.App",
+            "type": "XML",
+            "id": "app"
+        },
+        "services": {
+            "ShellUIService": {
+                "factoryName": "sap.ushell.ui5service.ShellUIService"
+            }
+        },
+        "dependencies": {
+            "minUI5Version": "1.71.16",
+            "libs": {
+                "sap.f": {
+                    "minUI5Version": "1.71.16",
+                    "lazy": true
+                },
+                "sap.m": {
+                    "minUI5Version": "1.71.16",
+                    "lazy": true
+                },
+                "sap.ui.core": {
+                    "minUI5Version": "1.71.16",
+                    "lazy": true
+                },
+                "sap.ui.layout": {
+                    "minUI5Version": "1.71.16",
+                    "lazy": true
+                },
+                "sap.ui.richtexteditor": {
+                    "minUI5Version": "1.71.16",
+                    "lazy": true
+                },
+                "com.goap.cfms.works.reuselib": {
+                    "lazy": true
+                }
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "preload": true,
+                "settings": {
+                    "bundleName": "com.goap.cfms.works.as.i18n.i18n"
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "preload": true,
+                "settings": {
+                    "defaultBindingMode": "TwoWay",
+                    "defaultCountMode": "Inline"
+                }
+            },
+            "@i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "uri": "i18n/i18n.properties"
+            },
+            "printModel": {
+                "dataSource": "printService",
+                "preload": true,
+                "settings": {
+                    "defaultBindingMode": "OneWay"
+                }
+            }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "com.goap.cfms.works.as.view",
+                "controlId": "app",
+                "controlAggregation": "pages",
+                "bypassed": {
+                    "target": [
+                        "notFound"
+                    ]
+                },
+                "async": true
+            },
+            "routes": [
+                {
+                    "pattern": "",
+                    "name": "default",
+                    "target": [
+                        "master"
+                    ]
+                },
+                {
+                    "pattern": "Detail/{objectId},{stateId}",
+                    "name": "Detail",
+                    "target": [
+                        "master",
+                        "detail"
+                    ]
+                },
+                {
+                    "pattern": "notFound",
+                    "name": "notFound",
+                    "target": [
+                        "master",
+                        "Blank"
+                    ]
+                }
+            ],
+            "targets": {
+                "notFound": {
+                    "viewPath": "com.goap.cfms.works.reuselib",
+                    "viewLevel": 1,
+                    "viewName": "NotFound",
+                    "viewId": "notFound"
+                },
+                "master": {
+                    "viewName": "Master",
+                    "controlId": "MasterPage",
+                    "viewLevel": 2,
+                    "title": "{i18n>com.goap.cfms.works.as.master.title}"
+                },
+                "detail": {
+                    "viewName": "Detail",
+                    "controlId": "DetailPage",
+                    "viewLevel": 3,
+                    "title": "{i18n>com.goap.cfms.works.as.detail.title}"
+                },
+                "Blank": {
+                    "viewName": "NotFound",
+                    "controlId": "DetailPage"
+                }
+            }
+        }
+    },
+    "sap.platform.hcp": {
+        "uri": "",
+        "_version": "1.1.0"
+    },
+    "sap.platform.abap": {
+        "uri": "/sap/bc/ui5_ui5/sap/zas",
+        "_version": "1.1.0"
+    }
+}

@@ -1,0 +1,78 @@
+<core:FragmentDefinition height="100%" xmlns:layout="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns="sap.m">
+	<Dialog title="{i18n>master.frag.title.createas}" contentHeight="40%" contentWidth="40%">
+		<content>
+		<Input id="idDocCategory" visible="false"/>
+			<UploadCollection
+				id="idChecklistUploadCollection"
+				multiple="true"
+				change="onChange"
+				fileType="jpg,jpeg,png,bmp,pdf"
+				sameFilenameAllowed="true"
+				fileDeleted="onFileDeleted"
+				filenameLengthExceed="onFilenameLengthExceed"
+				fileRenamed="onFileRenamed"
+				fileSizeExceed="onFileSizeExceed"
+				selectionChange="onSelectionChange"
+				typeMissmatch="onTypeMissmatch"
+				uploadButtonInvisible="{= (${detailView>/bEditable} &amp;&amp; (${detailView>/SubmitBtnVisibility} === 'X' ? true: false)) ? false : true}"
+				instantUpload="true"
+				uploadComplete="onUploadCompleteCheckList"
+				beforeUploadStarts="onBeforeChecklistUploadStarts"
+				uploadTerminated="onUploadTerminated"
+				items="{
+					path: '/WrkAttachmentsSet',
+					templateShareable: false
+				}"
+				uploadUrl="/sap/opu/odata/sap/ZGW_WRK_ADM_SANC_SRV/WrkAttachmentsSet"
+				numberOfAttachmentsText="Uploaded (8)"
+				>
+				<toolbar>
+					<OverflowToolbar>
+						<Title />
+						<ToolbarSpacer />
+						<!-- <SearchField width="10rem" search="onSearch" /> -->
+						<Button
+							id="idDeleteSelectedButton"
+							text="Delete"
+							press="onDeleteSelectedItems"
+							enabled="false"
+							visible="false"
+							type="Transparent" />
+						<ToggleButton
+							id="selectAllButton"
+							text="Select all"
+							press="onSelectAllPress"
+							enabled="false"
+							visible="false"
+							type="Transparent" />
+						<UploadCollectionToolbarPlaceholder />
+					</OverflowToolbar>
+				</toolbar>
+				<items>
+					<UploadCollectionItem
+						documentId="{DmsGuid}"
+						visibleDelete="false"
+						visibleEdit="false"
+						fileName="{Filename}"
+						url="/sap/opu/odata/sap/ZGW_WRK_ADM_SANC_SRV/WrkAttachmentsSet(DmsGuid=guid'{DmsGuid}',DocGuid=guid'{DocGuid}',DocType='ZWAS')/$value"
+						>
+						<attributes>
+						    <ObjectAttribute title="{i18n>detail.attachment.UploadedBy}" text="{UploadedBy}" active="false" />
+						    <ObjectAttribute title="{i18n>detail.attachment.UpoadedOn}" text="{path: 'UploadedDatetime', type: 'sap.ui.model.type.DateTime'}" active="false" />
+						    <ObjectAttribute title="{i18n>detail.attachment.DocumentType}" text="{MimeType}" active="false" />
+						</attributes>
+						<statuses>
+							<ObjectStatus title="{i18n>detail.ops.panel.content.textArea.Reason}"
+								text="{Reason}"
+								/>
+						</statuses>
+					</UploadCollectionItem>
+				</items>
+			</UploadCollection>	
+		</content>
+		<buttons>
+			<Button text="{i18n>master.frag.action.OK}" press="onCancelChecklistFrag"></Button>
+			<!-- <Button text="{i18n>master.frag.action.cancel}" press="onCancelChecklistFrag"></Button> -->
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

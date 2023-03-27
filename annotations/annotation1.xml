@@ -1,0 +1,116 @@
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata-data-aggregation-ext/v4.0/cs02/vocabularies/Org.OData.Aggregation.V1.xml">
+		<edmx:Include Alias="Aggregation" Namespace="Org.OData.Aggregation.V1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/vocabularies/Org.OData.Capabilities.V1.xml">
+		<edmx:Include Alias="Capabilities" Namespace="Org.OData.Capabilities.V1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="https://wiki.scn.sap.com/wiki/download/attachments/448470974/Common.xml?api=v2">
+		<edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="https://wiki.scn.sap.com/wiki/download/attachments/448470971/Communication.xml?api=v2">
+		<edmx:Include Alias="vCard" Namespace="com.sap.vocabularies.Communication.v1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/vocabularies/Org.OData.Core.V1.xml">
+		<edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/vocabularies/Org.OData.Measures.V1.xml">
+		<edmx:Include Alias="CQP" Namespace="Org.OData.Measures.V1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="https://wiki.scn.sap.com/wiki/download/attachments/448470968/UI.xml?api=v2">
+		<edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+	</edmx:Reference>
+	<edmx:DataServices>
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm"/>
+		<Schema Namespace="LoansWplcFinancing.localannotations.v1" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+			<Annotations Target="LOANSWP_FIN_REUSE_SRV.C_Loanswp_CashFlowType">
+				<!--<Annotation Term="UI.Chart">-->
+					<!--<Record Type="UI.ChartDefinitionType">-->
+						<!--<PropertyValue Property="Title" String="Sales"/>-->
+						<!--<PropertyValue Property="ChartType" EnumMember="UI.ChartType/Line"/>-->
+						<!--<PropertyValue Property="Dimensions">-->
+							<!--<Collection>-->
+								<!--<PropertyPath>contractnum</PropertyPath>-->
+							<!--</Collection>-->
+						<!--</PropertyValue>-->
+						<!--<PropertyValue Property="Measures">-->
+							<!--<Collection>-->
+								<!--<PropertyPath>totalfinamt</PropertyPath>-->
+								<!--&lt;!&ndash;<PropertyPath>AuthorizedAmount</PropertyPath>&ndash;&gt;-->
+							<!--</Collection>-->
+						<!--</PropertyValue>-->
+					<!--</Record>-->
+				<!--</Annotation>-->
+
+				<Annotation Term="UI.Chart">
+					<Record Type="UI.ChartDefinitionType">
+						<PropertyValue Property="ChartType" EnumMember="UI.ChartType/Line"/>
+						<PropertyValue Property="Measures">
+							<Collection>
+								<PropertyPath>totalfinamt</PropertyPath>
+								<PropertyPath>orignaltotamt</PropertyPath>
+								<PropertyPath>utilizationamt</PropertyPath>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="MeasureAttributes">
+							<Collection>
+								<Record Type="UI.ChartMeasureAttributeType">
+									<PropertyValue Property="Role" EnumMember="UI.ChartMeasureRoleType/Axis2"/>
+									<PropertyValue Property="Measure" PropertyPath="totalfinamt"/>
+								</Record>
+								<Record Type="UI.ChartMeasureAttributeType">
+									<PropertyValue Property="Measure" PropertyPath="orignaltotamt"/>
+									<PropertyValue Property="Role" EnumMember="UI.ChartMeasureRoleType/Axis2"/>
+								</Record>
+								<Record Type="UI.ChartMeasureAttributeType">
+									<PropertyValue Property="Measure" PropertyPath="utilizationamt"/>
+									<PropertyValue Property="Role" EnumMember="UI.ChartMeasureRoleType/Axis1"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="Dimensions">
+							<Collection>
+								<PropertyPath>valuedate</PropertyPath>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="DimensionAttributes">
+							<Collection>
+								<Record Type="UI.ChartDimensionAttributeType">
+									<PropertyValue Property="Dimension" PropertyPath="contractnum"/>
+									<PropertyValue Property="Role" EnumMember="UI.ChartDimensionRoleType/Category"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="Actions">
+							<Collection>
+								<Record Type="UI.DataFieldForIntentBasedNavigation">
+									<PropertyValue Property="SemanticObject" String="SemanticObjectCategory"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+					</Record>
+				</Annotation>
+				<!--<Annotation Term="UI.PresentationVariant">-->
+					<!--<Record Type="UI.PresentationVariantType">-->
+						<!--<PropertyValue Property="SortOrder">-->
+							<!--<Collection>-->
+								<!--<Record Type="Common.SortOrderType">-->
+									<!--<PropertyValue Property="Property" PropertyPath="MM"/>-->
+								<!--</Record>-->
+							<!--</Collection>-->
+						<!--</PropertyValue>-->
+						<!--<PropertyValue Property="GroupBy"/>-->
+						<!--<PropertyValue Property="TotalBy"/>-->
+						<!--<PropertyValue Property="Total"/>-->
+						<!--<PropertyValue Property="Visualizations">-->
+							<!--<Collection>-->
+								<!--<AnnotationPath>@UI.Chart</AnnotationPath>-->
+							<!--</Collection>-->
+						<!--</PropertyValue>-->
+						<!--<PropertyValue Property="RequestAtLeast"/>-->
+					<!--</Record>-->
+				<!--</Annotation>-->
+			</Annotations>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

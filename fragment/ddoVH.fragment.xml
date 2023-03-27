@@ -1,0 +1,14 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<SelectDialog
+		title="{i18n>detail.ops.panel.content.table.column.vh.title.ddo}"
+		multiSelect = "false"
+		rememberSelections = "true"
+		liveChange="handleHOADDOSearch"
+        search="handleHOADDOSearch"
+		confirm="onHOADDOSelect"
+		cancel="handleHOADDOClose">
+        
+	</SelectDialog>
+</core:FragmentDefinition>

@@ -1,0 +1,263 @@
+<!-- 
+
+ Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+ -->
+<core:FragmentDefinition height="100%" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:u="sap.ui.unified"
+	xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog title="{i18n>master.frag.createMigratedAS.dialog.title}" contentWidth="100%" busy="{masterView>/busy}"
+		afterClose="afterCloseAgmtCreateDialog">
+		<content>
+			<Wizard id="wizardsteps" finishButtonText="{i18n>master.frag.createMigratedAS.dialog.button.next}" showNextButton="false"
+				stepActivate="onStepPress">
+				<WizardStep title="{i18n>master.frag.createMigratedAS.step1.title}">
+					<Label text="{i18n>master.frag.createMigratedAS.fileCategory}" class="sapUiResponsiveMargin"
+						required="{oControlModel>/AgrCategory/mandatory}"/>
+					<HBox justifyContent="Start" class="sapUiMediumMarginBegin">
+						<RadioButtonGroup id="categoryfile" selectedIndex="0" columns="3" app:Key="AgrCategory" select="onRadioButtonGroupChange">
+							<buttons>
+								<RadioButton editable="{migratedModel>/EditableField}" id="goCategory" text="{i18n>master.frag.createMigratedAS.goSanction}"
+									select="onRadioButtonSelect"/>
+								<RadioButton editable="{migratedModel>/EditableField}" id="deptCategory" text="{i18n>master.frag.createMigratedAS.deptSanction}"
+									select="onRadioButtonSelect"/>
+							</buttons>
+							<customData>
+								<core:CustomData key="{oControlModel>/AgrCategory/mandatory}"/>
+							</customData>
+						</RadioButtonGroup>
+					</HBox>
+					<l:Grid defaultSpan="XL6 L6 M6 S12">
+						<f:Form editable="true" id="goSanctionForm">
+							<f:layout>
+								<f:ResponsiveGridLayout class="noPadding" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="3" emptySpanL="3"
+									emptySpanM="3" emptySpanS="3" columnsXL="3" columnsL="1" columnsM="1"/>
+							</f:layout>
+							<f:formContainers>
+								<f:FormContainer visible="{createNewASModel>/sancno1}">
+									<f:FormElement>
+										<f:label>
+											<Label visible="{createNewASModel>/sancno1}" text='{i18n>master.frag.createMigratedAS.number}' required="true"/>
+										</f:label>
+										<f:fields>
+											<Input visible="{createNewASModel>/sancno1}" id="sancNo" name="SanNumber" change="onMigratedDialogInputChange" maxLength="4"
+												editable="{migratedModel>/EditableField}" value="{path: 'migratedModel>/number', formatter: '.formatter.sancNoInput'}">
+												<customData>
+													<core:CustomData key="{migratedModel>/number}"/>
+												</customData>
+											</Input>
+										</f:fields>
+									</f:FormElement>
+								</f:FormContainer>
+								<f:FormContainer visible="{createNewASModel>/sancno2}">
+									<f:FormElement>
+										<f:label>
+											<Label visible="{createNewASModel>/sancno2}" text='{i18n>master.frag.createMigratedAS.number}' required="true"/>
+										</f:label>
+										<f:fields>
+											<Input maxLength="15" visible="{createNewASModel>/sancno2}" id="sancNo1" name="SanNumber" change="onMigratedDialogInputChange"
+												editable="{migratedModel>/EditableField}" value="{path: 'migratedModel>/number', formatter: '.formatter.sancNoInput'}">
+												<customData>
+													<core:CustomData key="{migratedModel>/number}"/>
+												</customData>
+											</Input>
+										</f:fields>
+									</f:FormElement>
+								</f:FormContainer>
+								<f:FormContainer visible="{createNewASModel>/typeVisible}">
+									<f:FormElement>
+										<f:label>
+											<Label text='{i18n>master.frag.createMigratedAS.type}' required="true"/>
+										</f:label>
+										<f:fields>
+											<Select name="SanType" id="idMigratedASType" editable="{migratedModel>/EditableField}" items="{/ZWRK_C_MIG_GO}" change="onSelectChange"
+												selectedKey="{migratedModel>/type}" forceSelection="false">
+												<core:Item text="{go_type}" key="{go_type}"/>
+												<customData>
+													<core:CustomData key="{migratedModel>/type}"/>
+												</customData>
+											</Select>
+										</f:fields>
+									</f:FormElement>
+								</f:FormContainer>
+								<f:FormContainer>
+									<f:FormElement>
+										<f:label>
+											<Label text='{i18n>master.frag.createMigratedAS.sanction.date}' required="true"/>
+										</f:label>
+										<f:fields>
+											<DatePicker id="sancDate" name="SanDate" editable="{migratedModel>/EditableField}" change="onMigratedDialogDateChange"
+												placeholder="DD.MM.YYYY"
+												value="{path :'migratedModel>/date', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, UTC: true}}"
+												displayFormat="dd.MM.yyyy">
+												<customData>
+													<core:CustomData key="{migratedModel>/date}"/>
+												</customData>
+											</DatePicker>
+										</f:fields>
+									</f:FormElement>
+								</f:FormContainer>
+								<f:FormContainer >
+									<f:FormElement visible="{masterView>/bAmendTS}">
+										<f:label>
+											<Label text='{i18n>master.frag.createMigratedAS.dept}' required="true"/>
+										</f:label>
+										<f:fields>
+											<!--	<Select name="SanDepartment" id="sancDept" editable="{migratedModel>/EditableField}" items="{/ZWRK_MIG_AS_SAN_DEPT_C}"
+												change="onSelectChange" selectedKey="{migratedModel>/dept}" forceSelection="false" value="{migratedModel>/dept}">
+												<core:Item text="{dept} - {beschr}" key="{dept}"/>
+												<customData>
+													<core:CustomData key="{migratedModel>/dept}"/>
+												</customData>
+											</Select>-->
+											<Input name="SanDepartment" id="sancDept" selectedKey="{migratedModel>/beschr}" value="{migratedModel>/dept}" showValueHelp="true"
+												valueHelpOnly="true" editable="{migratedModel>/EditableField}" liveChange="handleLiveChange" suggestionItems="{/ZWRK_MIG_AS_SAN_DEPT_C}"
+												valueHelpRequest="handleValueHelp">
+												<customData>
+													<core:CustomData key="key" value="dept"/>
+													<core:CustomData key="text" value="beschr"/>
+													<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_MIG_AS_SAN_DEPT_C', entityType: 'ZWRK_MIG_AS_SAN_DEPT_CType'}"/>
+													<core:CustomData key="filterArray" value="{filter:[]}"/>
+													<core:CustomData key="mode" value="SingleSelectMaster"/>
+												</customData>
+												<suggestionItems>
+													<core:Item text="{dept} - {beschr}" key="{dept} - {beschr}"/>
+												</suggestionItems>
+											</Input>
+										</f:fields>
+									</f:FormElement>
+								</f:FormContainer>
+							</f:formContainers>
+						</f:Form>
+						<f:Form editable="true" id="goSanctionFormRight">
+							<f:layout>
+								<f:ResponsiveGridLayout class="noPadding" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" emptySpanXL="3" emptySpanL="3"
+									emptySpanM="3" emptySpanS="3" columnsXL="3" columnsL="1" columnsM="1"/>
+							</f:layout>
+							<f:formContainers>
+								<f:FormContainer>
+									<f:FormElement>
+										<f:label>
+											<Label text='{i18n>master.frag.createMigratedAS.Authority}' required="true"/>
+										</f:label>
+										<f:fields>
+											<Input id="sanAuthority" editable="{migratedModel>/EditableField}" name="SanAuthority" value="{migratedModel>/authority}"
+												valueHelpRequest="onhandleSanctionAuthority" showValueHelp="true">
+												<customData>
+													<core:CustomData key="{migratedModel>/authority}"/>
+												</customData>
+											</Input>
+										</f:fields>
+									</f:FormElement>
+								</f:FormContainer>
+								<f:FormContainer visible="{createNewASModel>/migratedSanctionVisible}">
+									<f:FormElement>
+										<f:label>
+											<Label id="SanctionAmountId" visible="{createNewASModel>/migratedSanctionVisible}" text='{i18n>master.frag.createMigratedAS.sanctionAmount}'
+												required="true"/>
+										</f:label>
+										<f:fields>
+											<Input id="sancAmount" editable="{migratedModel>/EditableField}" visible="{createNewASModel>/migratedSanctionVisible}" maxLength="11"
+												name="SanAmount" change="onMigratedDialogInputChange" value="{migratedModel>/sancAmount}">
+												<customData>
+													<core:CustomData key="{migratedModel>/sancAmount}"/>
+												</customData>
+											</Input>
+										</f:fields>
+									</f:FormElement>
+								</f:FormContainer>
+								<f:FormContainer>
+									<f:FormElement>
+										<f:label>
+											<Label text='{i18n>master.frag.createMigratedAS.amount}' required="true"/>
+										</f:label>
+										<f:fields>
+											<Input editable="{migratedModel>/EditableField}" id="goAmount" maxLength="11" name="GoAmount" change="onMigratedDialogInputChange"
+												value="{path: 'migratedModel>/goAmount', formatter: '.formatter.goAmountInput'}">
+												<customData>
+													<core:CustomData key="{migratedModel>/goAmount}"/>
+												</customData>
+											</Input>
+										</f:fields>
+									</f:FormElement>
+								</f:FormContainer>
+								<f:FormContainer>
+									<f:FormElement>
+										<f:label>
+											<Label text='{i18n>master.frag.createMigratedAS.fileUpload}'/>
+										</f:label>
+										<f:fields>
+											<CheckBox id="fileUpload" select="onCheckBoxSelect"/>
+										</f:fields>
+									</f:FormElement>
+								</f:FormContainer>
+							</f:formContainers>
+						</f:Form>
+					</l:Grid>
+				</WizardStep>
+			</Wizard>
+			<Table items="{modelName>/results}" visible="{createNewASModel>/migratedPhaseOneTabelVisible}">
+				<headerToolbar>
+					<OverflowToolbar>
+						<ToolbarSpacer/>
+						<Button icon="sap-icon://add" visible="{createNewASModel>/migratedPhaseOneTabelVisible}" press="OnPressAddNewMigNumber"></Button>
+					</OverflowToolbar>
+				</headerToolbar>
+				<columns textAlign="Center">
+					<Column>
+						<header>
+							<Label text="Migrated AS Number" textAlign="Center"/>
+						</header>
+					</Column>
+					<Column>
+						<header>
+							<Label text="Sanction Amount" textAlign="Center"/>
+						</header>
+					</Column>
+					<Column>
+						<header>
+							<Label text="AS Description" textAlign="Center"/>
+						</header>
+					</Column>
+					<Column>
+						<header>
+							<Label text="Sanction Reference Number" textAlign="Center"/>
+						</header>
+					</Column>
+					<Column>
+						<header>
+							<Label textAlign="Center"/>
+						</header>
+					</Column>
+				</columns>
+				<ColumnListItem vAlign="Middle">
+					<cells>
+						<Input id="idMigratedASCode" value="{modelName>MigASNumber}" placeholder="{i18n>master.frag.popup.placeholder.migraedASPlaceholder}"
+							showValueHelp="true" valueHelpOnly="true" editable="{modelName>MigASNumberEditable}" liveChange="handleLiveChange"
+							suggestionItems="{/ZWRK_C_OLD_AS}" valueHelpRequest="handleValueHelp">
+							<customData>
+								<core:CustomData key="text" value="project_id"/>
+								<core:CustomData key="key" value="prj_desc"/>
+								<core:CustomData key="reqFields" value="bezeich"/>
+								<core:CustomData key="text" value="san_amt"/>
+								<core:CustomData key="entityInfo" value="{entitySet: 'ZWRK_C_OLD_AS', entityType: 'ZWRK_C_OLD_ASType'}"/>
+								<core:CustomData key="filterArray" value="{filter:[]}"/>
+								<core:CustomData key="mode" value="MultiSelect"/>
+							</customData>
+							<suggestionItems>
+								<core:Item text="{project_id}" key="{project_id}"/>
+							</suggestionItems>
+						</Input>
+						<Input id="SanctionTableId" value="{modelName>SancAmunt}" placeholder="Please Enter Sanction Amount"></Input>
+						<Input id="ASDescription" value="{modelName>ASDescription}" editable="false"></Input>
+						<Input id="SanctionDescr" value="{modelName>SanctionRefe}" editable="false"></Input>
+						<Button id="DeleteRowInTable" icon="sap-icon://delete" press="onPressDeleteRowForSanction"/>
+					</cells>
+				</ColumnListItem>
+			</Table>
+		</content>
+		<buttons>
+			<Button text="{i18n>master.frag.action.create}" press="onCreateMigratedAS" visible="{createNewASModel>/creatBtnVisible}" type="Emphasized"></Button>
+			<Button text="{i18n>master.frag.action.cancel}" press="onCancelMigratedAS" visible="{createNewASModel>/cancelBtnVisible}"></Button>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

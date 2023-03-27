@@ -1,0 +1,143 @@
+<core:FragmentDefinition
+	height="50%"
+	xmlns:layout="sap.ui.layout"
+	xmlns:core="sap.ui.core"
+	xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+	xmlns:l="sap.ui.layout">
+    <Dialog title="{i18n>frag.changeLog.title}"
+		contentHeight="80%"
+        contentWidth="80%">
+        <content>
+            <Panel>
+				<Table id="idProductsTable" fixedLayout="true">
+        			<columns>
+						<Column width="5rem">
+							<Text text="User" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Change Date" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Type" />
+						</Column>
+						<Column width="7rem">
+							<Text text="Short Description" />
+						</Column>
+						<Column width="5rem">
+							<Text text="EstimateVal" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Govt Order No." />
+						</Column>
+						<Column width="5rem">
+							<Text text="Govt Order Ref Date" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Category" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Local Class" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Status Text" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Main Work Nature" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Sub Class 01" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Sub Class 02" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Sub Class 03" />
+						</Column>
+						<Column width="9rem">
+							<Text text="Initiating Dept" />
+						</Column>
+						<Column width="7rem">
+							<Text text="Scheme" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Stage" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Executing Dept" />
+						</Column>
+						<Column width="5rem">
+							<Text text="BcRatio" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Agency" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Ref Order No" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Ref Date" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Value Sactioned" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Currency Sanctioned" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Approve Order" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Approve Date" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Approve Status" />
+						</Column>
+						<Column width="5rem">
+							<Text text="District" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Mandal" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Village" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Loksabha" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Ref As Type" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Funding Agency" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Refern Agency" />
+						</Column>
+						<Column width="5rem">
+							<Text text="Ref Number" />
+						</Column>
+						<Column width="5rem">
+							<Text text="DcwType" />
+						</Column>
+					</columns>
+					<items>
+						<!-- <ColumnListItem id="idChangeLogColumnList">
+							<cells>
+								<ObjectIdentifier
+									title="{Date}"/>
+								<Text
+									text="{User}" />
+								<Text
+									text="{EstimateVal}" />
+							</cells>
+						</ColumnListItem> -->
+					</items>
+				</Table>
+            </Panel>
+        </content>
+        <buttons>
+            <Button text="{i18n>frag.changeLog.ok}" press="onCloseChangeLogDialog"></Button>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>
